@@ -1,0 +1,131 @@
+<div class="appointments-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>event</mat-icon>
+        Appointment Management
+      </mat-card-title>
+      <mat-card-subtitle>Manage patient appointments and scheduling</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="actions-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search appointments</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Search by patient, doctor, or reason">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" routerLink="/appointments/new" *ngIf="canManageAppointments()">
+          <mat-icon>add</mat-icon>
+          New Appointment
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading appointments...</p>
+      </div>
+
+      <div *ngIf="!loading && filteredAppointments.length === 0" class="no-data">
+        <mat-icon>event_busy</mat-icon>
+        <h3>No appointments found</h3>
+        <p *ngIf="searchControl.value">Try adjusting your search criteria</p>
+        <p *ngIf="!searchControl.value">No appointments have been scheduled yet</p>
+      </div>
+
+      <div *ngIf="!loading && filteredAppointments.length > 0" class="table-container">
+        <table mat-table [dataSource]="filteredAppointments" class="appointments-table">
+          <!-- Patient Column -->
+          <ng-container matColumnDef="patient">
+            <th mat-header-cell *matHeaderCellDef>Patient</th>
+            <td mat-cell *matCellDef="let appointment">
+              <strong>{{ appointment.patient_name }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Doctor Column -->
+          <ng-container matColumnDef="doctor">
+            <th mat-header-cell *matHeaderCellDef>Doctor</th>
+            <td mat-cell *matCellDef="let appointment">{{ appointment.doctor_name }}</td>
+          </ng-container>
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let appointment">
+              {{ appointment.appointment_date | date:'MMM dd, yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Time Column -->
+          <ng-container matColumnDef="time">
+            <th mat-header-cell *matHeaderCellDef>Time</th>
+            <td mat-cell *matCellDef="let appointment">
+              {{ appointment.appointment_time }}
+            </td>
+          </ng-container>
+
+          <!-- Duration Column -->
+          <ng-container matColumnDef="duration">
+            <th mat-header-cell *matHeaderCellDef>Duration</th>
+            <td mat-cell *matCellDef="let appointment">
+              {{ appointment.duration_minutes }} min
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let appointment">
+              <mat-chip [color]="getStatusColor(appointment.status)" selected>
+                {{ getStatusText(appointment.status) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Reason Column -->
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>Reason</th>
+            <td mat-cell *matCellDef="let appointment">
+              <span class="reason-text">{{ appointment.reason }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let appointment">
+              <div class="action-buttons">
+                <button 
+                  mat-icon-button 
+                  color="primary" 
+                  [routerLink]="['/appointments', appointment.id]"
+                  matTooltip="View Details"
+                  *ngIf="canViewAppointments()">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                
+                <button 
+                  mat-icon-button 
+                  color="accent" 
+                  [routerLink]="['/appointments', appointment.id, 'edit']"
+                  matTooltip="Edit Appointment"
+                  *ngIf="canManageAppointments()">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

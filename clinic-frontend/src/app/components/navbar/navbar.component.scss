@@ -1,0 +1,56 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-info {
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.clinic-title {
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.sidenav-container {
+  height: calc(100vh - 64px);
+}
+
+.sidenav {
+  width: 250px;
+}
+
+.main-content {
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+.menu-button {
+  margin-right: 5px;
+}
+
+// Mobile styles
+@media (max-width: 768px) {
+  .user-info {
+    display: none;
+  }
+  
+  .clinic-title {
+    font-size: 16px;
+  }
+}
+
+// Active menu item
+a.mat-list-item.active {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+  
+  .mat-icon {
+    color: #2196f3;
+  }
+}
+
+// Hover effect
+a.mat-list-item:hover {
+  background-color: rgba(33, 150, 243, 0.05);
+}

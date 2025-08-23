@@ -1,0 +1,57 @@
+<div class="container">
+  <div class="form-container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title class="text-center">
+          <h2 class="primary-color">Dental Clinic Login</h2>
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput 
+                   formControlName="username" 
+                   type="text" 
+                   required
+                   autocomplete="username">
+            <mat-error *ngIf="f['username'].invalid && f['username'].touched">
+              Username is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput 
+                   formControlName="password" 
+                   type="password" 
+                   required
+                   autocomplete="current-password">
+            <mat-error *ngIf="f['password'].invalid && f['password'].touched">
+              Password is required
+            </mat-error>
+          </mat-form-field>
+
+          <div class="text-center mt-20">
+            <button mat-raised-button 
+                    color="primary" 
+                    type="submit" 
+                    [disabled]="loading || loginForm.invalid"
+                    class="full-width">
+              <span *ngIf="loading">
+                <mat-spinner diameter="20" style="display: inline-block; margin-right: 10px;"></mat-spinner>
+                Logging in...
+              </span>
+              <span *ngIf="!loading">Login</span>
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+      
+      <mat-card-footer class="text-center">
+        <p><small>Dental Clinic Management System</small></p>
+      </mat-card-footer>
+    </mat-card>
+  </div>
+</div>

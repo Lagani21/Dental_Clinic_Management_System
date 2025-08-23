@@ -1,0 +1,168 @@
+<div class="dashboard-container">
+  <h1 class="welcome-title">{{ welcomeMessage }}</h1>
+  
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon patients">people</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.totalPatients }}</h3>
+            <p>Total Patients</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon appointments">event</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.todayAppointments }}</h3>
+            <p>Today's Appointments</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon bills">receipt</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.pendingBills }}</h3>
+            <p>Pending Bills</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card" *ngIf="currentUser?.role === 'admin'">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon inventory">inventory</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.lowStockItems }}</h3>
+            <p>Low Stock Items</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Main Navigation Buttons -->
+  <div class="main-navigation">
+    <h2>Management Modules</h2>
+    <div class="navigation-grid">
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/patients">
+        <mat-icon>people</mat-icon>
+        <span>Patients</span>
+        <small>Manage patient records</small>
+      </button>
+      
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/doctors" *ngIf="isAdmin()">
+        <mat-icon>medical_services</mat-icon>
+        <span>Doctors</span>
+        <small>Manage doctor profiles</small>
+      </button>
+      
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/inventory">
+        <mat-icon>inventory_2</mat-icon>
+        <span>Inventory</span>
+        <small>Manage medical supplies</small>
+      </button>
+      
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/treatments">
+        <mat-icon>healing</mat-icon>
+        <span>Treatments</span>
+        <small>Manage treatment catalog</small>
+      </button>
+      
+      <button mat-raised-button color="accent" class="nav-btn" routerLink="/todo">
+        <mat-icon>check_circle</mat-icon>
+        <span>TODO List</span>
+        <small>Manage tasks & reminders</small>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Calendar and Activities Row -->
+  <div class="calendar-activities-row">
+    <!-- Calendar Section -->
+    <mat-card class="calendar-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>event</mat-icon>
+          Appointment Calendar
+        </mat-card-title>
+        <div class="calendar-actions">
+          <button mat-icon-button color="primary" (click)="addAppointment()">
+            <mat-icon>add</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="refreshCalendar()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Simple Calendar View -->
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <button mat-icon-button (click)="previousMonth()">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <h3>{{ currentMonth }} {{ currentYear }}</h3>
+            <button mat-icon-button (click)="nextMonth()">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+          
+          <div class="calendar-grid">
+            <div class="calendar-day-header" *ngFor="let day of weekDays">{{ day }}</div>
+            <div 
+              class="calendar-day" 
+              *ngFor="let day of calendarDays" 
+              [class.today]="day.isToday"
+              [class.has-appointments]="day.hasAppointments"
+              [class.other-month]="!day.isCurrentMonth"
+              (click)="selectDate(day)">
+              <span class="day-number">{{ day.day }}</span>
+              <div class="appointment-indicator" *ngIf="day.appointmentCount > 0">
+                {{ day.appointmentCount }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Today's Activities -->
+    <mat-card class="activities-section">
+      <mat-card-header>
+        <mat-card-title>Today's Schedule</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="activity-list" *ngIf="todayAppointments.length > 0; else noAppointments">
+          <div class="appointment-item" *ngFor="let appointment of todayAppointments">
+            <div class="appointment-time">{{ appointment.appointment_time }}</div>
+            <div class="appointment-info">
+              <strong>{{ appointment.patient_name }}</strong>
+              <small>{{ appointment.reason }}</small>
+            </div>
+            <mat-chip [color]="getStatusColor(appointment.status)" selected>
+              {{ appointment.status }}
+            </mat-chip>
+          </div>
+        </div>
+        <ng-template #noAppointments>
+          <div class="no-appointments">
+            <mat-icon>event_available</mat-icon>
+            <p>No appointments scheduled for today</p>
+          </div>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

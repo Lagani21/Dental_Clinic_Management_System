@@ -1,0 +1,123 @@
+<div class="patients-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>people</mat-icon>
+        Patient Management
+      </mat-card-title>
+      <mat-card-subtitle>Manage patient records and information</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="actions-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search patients</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Search by name, email, or phone">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" routerLink="/patients/new" *ngIf="canDeletePatient()">
+          <mat-icon>add</mat-icon>
+          Add Patient
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading patients...</p>
+      </div>
+
+      <div *ngIf="!loading && filteredPatients.length === 0" class="no-data">
+        <mat-icon>people_outline</mat-icon>
+        <h3>No patients found</h3>
+        <p *ngIf="searchControl.value">Try adjusting your search criteria</p>
+        <p *ngIf="!searchControl.value">No patients have been added yet</p>
+      </div>
+
+      <div *ngIf="!loading && filteredPatients.length > 0" class="table-container">
+        <table mat-table [dataSource]="filteredPatients" class="patients-table">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let patient">
+              <div class="patient-name">
+                <strong>{{ patient.first_name }} {{ patient.last_name }}</strong>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let patient">{{ patient.email }}</td>
+          </ng-container>
+
+          <!-- Phone Column -->
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>Phone</th>
+            <td mat-cell *matCellDef="let patient">{{ patient.phone }}</td>
+          </ng-container>
+
+          <!-- Date of Birth Column -->
+          <ng-container matColumnDef="dateOfBirth">
+            <th mat-header-cell *matHeaderCellDef>Date of Birth</th>
+            <td mat-cell *matCellDef="let patient">
+              {{ patient.date_of_birth | date:'MMM dd, yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Assigned Doctor Column -->
+          <ng-container matColumnDef="assignedDoctor">
+            <th mat-header-cell *matHeaderCellDef>Assigned Doctor</th>
+            <td mat-cell *matCellDef="let patient">
+              <span *ngIf="patient.assigned_doctor_details">{{ patient.assigned_doctor_details.first_name }} {{ patient.assigned_doctor_details.last_name }}</span>
+              <span *ngIf="!patient.assigned_doctor_details" class="unassigned">Not assigned</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let patient">
+              <div class="action-buttons">
+                <button 
+                  mat-icon-button 
+                  color="primary" 
+                  [routerLink]="['/patients', patient.id]"
+                  matTooltip="View Details"
+                  *ngIf="canViewPatientDetails()">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                
+                <button 
+                  mat-icon-button 
+                  color="accent" 
+                  [routerLink]="['/patients', patient.id, 'edit']"
+                  matTooltip="Edit Patient"
+                  *ngIf="canDeletePatient()">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                
+                <button 
+                  mat-icon-button 
+                  color="warn" 
+                  (click)="deletePatient(patient)"
+                  matTooltip="Delete Patient"
+                  *ngIf="canDeletePatient()">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
