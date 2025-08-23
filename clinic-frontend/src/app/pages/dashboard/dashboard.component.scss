@@ -149,16 +149,21 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: all 0.2s ease;
       position: relative;
+      border: 1px solid transparent;
       
       &:hover {
         background-color: #f0f7ff;
+        border-color: #1976d2;
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
       }
       
       &.today {
         background-color: #e3f2fd;
         font-weight: bold;
+        border-color: #1976d2;
         
         .day-number {
           color: #1976d2;
@@ -167,15 +172,25 @@
       
       &.has-appointments {
         background-color: #f3e5f5;
+        border-color: #9c27b0;
       }
       
       &.other-month {
         color: #ccc;
         background-color: #fafafa;
+        cursor: default;
+        
+        &:hover {
+          background-color: #fafafa;
+          border-color: transparent;
+          transform: none;
+          box-shadow: none;
+        }
       }
       
       .day-number {
         font-size: 0.9rem;
+        font-weight: 500;
       }
       
       .appointment-indicator {
@@ -189,6 +204,7 @@
         align-items: center;
         justify-content: center;
         margin-top: 2px;
+        font-weight: bold;
       }
     }
   }

@@ -1,0 +1,92 @@
+<div class="appointment-form-container">
+  <h2 mat-dialog-title>
+    {{ isEditMode ? 'Edit Appointment' : 'Schedule New Appointment' }}
+  </h2>
+
+  <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Patient</mat-label>
+        <mat-select formControlName="patient" placeholder="Select a patient">
+          <mat-option *ngFor="let patient of patients" [value]="patient.id">
+            {{ patient.first_name }} {{ patient.last_name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="appointmentForm.get('patient')?.invalid && appointmentForm.get('patient')?.touched">
+          {{ getErrorMessage('patient') }}
+        </mat-error>
+      </mat-form-field>
+      
+      <button mat-button color="accent" type="button" (click)="addNewPatient()" class="add-new-btn">
+        Add New Patient
+      </button>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Doctor</mat-label>
+        <mat-select formControlName="doctor" placeholder="Select a doctor">
+          <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">
+            Dr. {{ doctor.user_details.first_name }} {{ doctor.user_details.last_name }}
+            ({{ doctor.user_details.specialization }})
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="appointmentForm.get('doctor')?.invalid && appointmentForm.get('doctor')?.touched">
+          {{ getErrorMessage('doctor') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput type="date" formControlName="appointment_date" placeholder="Select appointment date">
+        <mat-error *ngIf="appointmentForm.get('appointment_date')?.invalid && appointmentForm.get('appointment_date')?.touched">
+          {{ getErrorMessage('appointment_date') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Time</mat-label>
+        <input matInput type="time" formControlName="appointment_time" placeholder="Select appointment time">
+        <mat-error *ngIf="appointmentForm.get('appointment_time')?.invalid && appointmentForm.get('appointment_time')?.touched">
+          {{ getErrorMessage('appointment_time') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Reason for Visit</mat-label>
+      <input matInput formControlName="reason" placeholder="Enter reason for appointment">
+      <mat-error *ngIf="appointmentForm.get('reason')?.invalid && appointmentForm.get('reason')?.touched">
+        {{ getErrorMessage('reason') }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" placeholder="Enter any additional notes" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status" placeholder="Select appointment status">
+        <mat-option value="scheduled">Scheduled</mat-option>
+        <mat-option value="confirmed">Confirmed</mat-option>
+        <mat-option value="completed">Completed</mat-option>
+        <mat-option value="cancelled">Cancelled</mat-option>
+        <mat-option value="no-show">No Show</mat-option>
+      </mat-select>
+      <mat-error *ngIf="appointmentForm.get('status')?.invalid && appointmentForm.get('status')?.touched">
+        {{ getErrorMessage('status') }}
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <div mat-dialog-actions class="form-actions">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="loading">
+      {{ isEditMode ? 'Update' : 'Schedule' }} Appointment
+    </button>
+  </div>
+</div>

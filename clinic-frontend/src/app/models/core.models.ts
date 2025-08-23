@@ -138,6 +138,21 @@ export interface TreatmentInventoryUsage {
   created_at: string;
 }
 
+export interface TodoItem {
+  id: number;
+  title: string;
+  description?: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  due_date?: string;
+  assigned_to?: number;
+  assigned_to_details?: User;
+  created_by: number;
+  created_by_details?: User;
+  created_at: string;
+  updated_at: string;
+}
+
 // API Response interfaces
 export interface ApiResponse<T> {
   count?: number;

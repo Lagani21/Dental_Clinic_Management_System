@@ -1,0 +1,160 @@
+<div class="inventory-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        Inventory Management
+      </mat-card-title>
+      <mat-card-subtitle>Manage dental supplies, equipment, and medications</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="actions-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search inventory</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Search by name, description, or SKU">
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Category</mat-label>
+          <mat-select [formControl]="categoryFilter">
+            <mat-option value="all">All Categories</mat-option>
+            <mat-option value="equipment">Equipment</mat-option>
+            <mat-option value="supplies">Supplies</mat-option>
+            <mat-option value="medication">Medication</mat-option>
+            <mat-option value="consumables">Consumables</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" (click)="addInventoryItem()" *ngIf="canManageInventory()">
+          Add Item
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading inventory...</p>
+      </div>
+
+      <div *ngIf="!loading && filteredItems.length === 0" class="no-data">
+        <h3>No inventory items found</h3>
+        <p *ngIf="searchControl.value || categoryFilter.value !== 'all'">
+          Try adjusting your search criteria or filters
+        </p>
+        <p *ngIf="!searchControl.value && categoryFilter.value === 'all'">
+          No inventory items have been added yet
+        </p>
+      </div>
+
+      <div *ngIf="!loading && filteredItems.length > 0" class="table-container">
+        <table mat-table [dataSource]="filteredItems" class="inventory-table">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Item Name</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="item-name">
+                <strong>{{ item.name }}</strong>
+                <small *ngIf="item.is_low_stock" class="low-stock-badge">Low Stock</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="item-description">
+                {{ item.description || 'No description' | slice:0:50 }}{{ (item.description || '').length > 50 ? '...' : '' }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Category</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="category-badge" [style.background-color]="getCategoryColor(item.category)">
+                {{ item.category | titlecase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- SKU Column -->
+          <ng-container matColumnDef="sku">
+            <th mat-header-cell *matHeaderCellDef>SKU</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="sku">{{ item.sku }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Current Stock Column -->
+          <ng-container matColumnDef="currentStock">
+            <th mat-header-cell *matHeaderCellDef>Current Stock</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="stock-count" [class]="item.is_low_stock ? 'low-stock' : 'normal-stock'">
+                {{ item.current_stock }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Minimum Stock Column -->
+          <ng-container matColumnDef="minimumStock">
+            <th mat-header-cell *matHeaderCellDef>Min Stock</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="min-stock">{{ item.minimum_stock }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Unit Cost Column -->
+          <ng-container matColumnDef="unitCost">
+            <th mat-header-cell *matHeaderCellDef>Unit Cost</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="unit-cost">${{ item.unit_cost }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="action-buttons">
+                <button 
+                  mat-button 
+                  color="primary" 
+                  (click)="viewInventoryItem(item)"
+                  matTooltip="View Details"
+                  *ngIf="canViewInventoryDetails()">
+                  View
+                </button>
+                
+                <button 
+                  mat-button 
+                  color="accent" 
+                  (click)="editInventoryItem(item)"
+                  matTooltip="Edit Item"
+                  *ngIf="canManageInventory()">
+                  Edit
+                </button>
+                
+                <button 
+                  mat-button 
+                  color="warn" 
+                  (click)="deleteInventoryItem(item)"
+                  matTooltip="Delete Item"
+                  *ngIf="canManageInventory()">
+                  Delete
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

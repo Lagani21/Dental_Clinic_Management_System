@@ -30,12 +30,12 @@ export const routes: Routes = [
   },
   { 
     path: 'treatments', 
-    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./pages/treatments/treatments.component').then(m => m.TreatmentsComponent),
     canActivate: [AuthGuard]
   },
   { 
     path: 'todo', 
-    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./pages/todo/todo.component').then(m => m.TodoComponent),
     canActivate: [AuthGuard]
   },
   { 
@@ -45,7 +45,7 @@ export const routes: Routes = [
   },
   { 
     path: 'inventory', 
-    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./pages/inventory/inventory.component').then(m => m.InventoryComponent),
     canActivate: [AuthGuard, AdminGuard]
   },
   { 

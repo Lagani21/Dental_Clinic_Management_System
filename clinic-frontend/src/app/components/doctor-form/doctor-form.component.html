@@ -1,0 +1,131 @@
+<div class="doctor-form-container">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Edit Doctor' : 'Add New Doctor' }}
+  </h2>
+
+  <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <!-- Personal Information (Read-only for now) -->
+    <div class="form-section" *ngIf="isEditMode">
+      <h3>Personal Information</h3>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput [value]="data.doctor?.user_details?.first_name || ''" readonly>
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput [value]="data.doctor?.user_details?.last_name || ''" readonly>
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [value]="data.doctor?.user_details?.email || ''" readonly>
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput [value]="data.doctor?.user_details?.phone || ''" readonly>
+          <mat-icon matSuffix>phone</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Specialization</mat-label>
+          <input matInput [value]="data.doctor?.user_details?.specialization || ''" readonly>
+          <mat-icon matSuffix>medical_services</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>License Number</mat-label>
+          <input matInput [value]="data.doctor?.user_details?.license_number || ''" readonly>
+          <mat-icon matSuffix>verified_user</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Professional Information -->
+    <div class="form-section">
+      <h3>Professional Information</h3>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Years of Experience</mat-label>
+          <input matInput type="number" formControlName="years_of_experience" 
+                 placeholder="Enter years of experience" min="0" max="50">
+          <mat-icon matSuffix>school</mat-icon>
+          <mat-error *ngIf="doctorForm.get('years_of_experience')?.invalid && doctorForm.get('years_of_experience')?.touched">
+            {{ getErrorMessage('years_of_experience') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Consultation Fee</mat-label>
+          <input matInput type="number" formControlName="consultation_fee" 
+                 placeholder="Enter consultation fee" min="0" step="0.01">
+          <span matPrefix>$&nbsp;</span>
+          <mat-icon matSuffix>attach_money</mat-icon>
+          <mat-error *ngIf="doctorForm.get('consultation_fee')?.invalid && doctorForm.get('consultation_fee')?.touched">
+            {{ getErrorMessage('consultation_fee') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Biography</mat-label>
+        <textarea matInput formControlName="bio" 
+                  placeholder="Enter professional biography and qualifications" rows="4"></textarea>
+        <mat-icon matSuffix>description</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Schedule Information -->
+    <div class="form-section">
+      <h3>Schedule Information</h3>
+      
+      <div class="available-days">
+        <label class="section-label">Available Days:</label>
+        <div class="days-grid">
+          <mat-checkbox 
+            *ngFor="let day of availableDays" 
+            [value]="day"
+            [checked]="doctorForm.get('available_days')?.value?.includes(day)"
+            (change)="onDayChange(day, $event.checked)">
+            {{ day }}
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Start Time</mat-label>
+          <input matInput type="time" formControlName="start_time">
+          <mat-icon matSuffix>access_time</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>End Time</mat-label>
+          <input matInput type="time" formControlName="end_time">
+          <mat-icon matSuffix>access_time</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+
+  <div mat-dialog-actions class="form-actions">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="loading">
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <span *ngIf="!loading">{{ isEditMode ? 'Update' : 'Create' }} Doctor</span>
+    </button>
+  </div>
+</div>

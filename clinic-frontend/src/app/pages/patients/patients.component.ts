@@ -11,11 +11,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../models/core.models';
+import { PatientFormComponent } from '../../components/patient-form/patient-form.component';
+import { PatientViewComponent } from '../../components/patient-view/patient-view.component';
 
 @Component({
   selector: 'app-patients',
@@ -48,7 +51,8 @@ export class PatientsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -124,5 +128,46 @@ export class PatientsComponent implements OnInit {
   canViewPatientDetails(): boolean {
     const user = this.authService.currentUserValue;
     return user?.role === 'admin' || user?.role === 'doctor';
+  }
+
+  openPatientForm(patient?: Patient): void {
+    const dialogRef = this.dialog.open(PatientFormComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      minWidth: '600px',
+      data: { patient }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadPatients();
+      }
+    });
+  }
+
+  addPatient(): void {
+    this.openPatientForm();
+  }
+
+  editPatient(patient: Patient): void {
+    this.openPatientForm(patient);
+  }
+
+  viewPatient(patient: Patient): void {
+    const dialogRef = this.dialog.open(PatientViewComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      minWidth: '600px',
+      data: { patient }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.action === 'edit') {
+        // Open edit form
+        this.openPatientForm(result.patient);
+      }
+    });
   }
 }

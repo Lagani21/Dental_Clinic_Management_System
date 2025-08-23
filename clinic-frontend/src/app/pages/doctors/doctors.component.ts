@@ -9,11 +9,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { Doctor } from '../../models/core.models';
+import { DoctorFormComponent } from '../../components/doctor-form/doctor-form.component';
 
 @Component({
   selector: 'app-doctors',
@@ -44,7 +46,8 @@ export class DoctorsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -115,6 +118,29 @@ export class DoctorsComponent implements OnInit {
   canDeleteDoctor(): boolean {
     const user = this.authService.currentUserValue;
     return user?.role === 'admin';
+  }
+
+  openDoctorForm(doctor?: Doctor): void {
+    const dialogRef = this.dialog.open(DoctorFormComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      data: { doctor }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadDoctors();
+      }
+    });
+  }
+
+  addDoctor(): void {
+    this.openDoctorForm();
+  }
+
+  editDoctor(doctor: Doctor): void {
+    this.openDoctorForm(doctor);
   }
 
   canManageDoctors(): boolean {

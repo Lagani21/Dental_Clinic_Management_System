@@ -5,10 +5,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { User } from '../../models/user.model';
 import { Appointment } from '../../models/core.models';
+import { AppointmentFormComponent } from '../../components/appointment-form/appointment-form.component';
 
 interface CalendarDay {
   day: number;
@@ -56,7 +58,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -186,14 +189,36 @@ export class DashboardComponent implements OnInit {
   }
 
   selectDate(day: CalendarDay): void {
-    console.log('Selected date:', day.date);
-    // You can implement appointment viewing/adding for the selected date
+    if (this.isAdmin()) {
+      this.openAppointmentForm(day.date);
+    } else {
+      console.log('Selected date:', day.date);
+      // For doctors, you could show existing appointments for the day
+    }
   }
 
   // Action methods
   addAppointment(): void {
-    // Navigate to appointment creation or open dialog
-    console.log('Add appointment clicked');
+    this.openAppointmentForm(new Date());
+  }
+
+  openAppointmentForm(selectedDate: Date): void {
+    const dateString = selectedDate.toISOString().split('T')[0];
+    
+    const dialogRef = this.dialog.open(AppointmentFormComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      minWidth: '500px',
+      data: { selectedDate: dateString }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Refresh calendar and appointments after successful creation
+        this.loadData();
+      }
+    });
   }
 
   refreshCalendar(): void {

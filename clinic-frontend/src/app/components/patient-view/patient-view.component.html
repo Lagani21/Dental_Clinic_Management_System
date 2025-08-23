@@ -1,0 +1,100 @@
+<div class="patient-view-container">
+  <h2 mat-dialog-title>
+    Patient Details
+  </h2>
+
+  <div mat-dialog-content class="patient-details">
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput [value]="patient.first_name" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput [value]="patient.last_name" readonly>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput [value]="patient.email" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput [value]="patient.phone" readonly>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Age</mat-label>
+        <input matInput [value]="calculateAge(patient.date_of_birth)" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Assigned Doctor</mat-label>
+        <input matInput [value]="getAssignedDoctorName()" readonly>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Address</mat-label>
+      <textarea matInput [value]="patient.address" readonly rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="form-section">
+      <h3>Emergency Contact</h3>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Emergency Contact Name</mat-label>
+          <input matInput [value]="patient.emergency_contact_name" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Emergency Contact Phone</mat-label>
+          <input matInput [value]="patient.emergency_contact_phone" readonly>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Medical Information</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Medical History</mat-label>
+        <textarea matInput [value]="patient.medical_history || 'None'" readonly rows="3"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Allergies</mat-label>
+        <textarea matInput [value]="patient.allergies || 'None'" readonly rows="2"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="form-section">
+      <h3>System Information</h3>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Created</mat-label>
+          <input matInput [value]="formatDate(patient.created_at)" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Last Updated</mat-label>
+          <input matInput [value]="formatDate(patient.updated_at)" readonly>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="form-actions">
+    <button mat-button type="button" (click)="onClose()">
+      Close
+    </button>
+    <button mat-raised-button color="primary" (click)="onEdit()">
+      Edit Patient
+    </button>
+  </div>
+</div>

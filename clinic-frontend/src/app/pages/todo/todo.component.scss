@@ -1,0 +1,198 @@
+.todo-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #ffffff;
+}
+
+.header-card {
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.actions-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .search-field {
+    flex: 2;
+    min-width: 300px;
+  }
+
+  .filter-field {
+    min-width: 150px;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .search-field, .filter-field {
+      min-width: auto;
+    }
+  }
+}
+
+.table-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: #666;
+
+  p {
+    margin-top: 16px;
+    font-size: 0.9rem;
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+
+  h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+  }
+
+  p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.todos-table {
+  width: 100%;
+
+  th {
+    background-color: #f5f5f5;
+    color: #333;
+    font-weight: 600;
+    padding: 12px 8px;
+  }
+
+  td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .todo-title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .todo-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+  }
+
+  .todo-description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .priority-chip, .status-chip {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    color: white;
+    font-weight: 500;
+  }
+
+  .priority-badge, .status-badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 500;
+    text-align: center;
+    display: inline-block;
+    min-width: 80px;
+  }
+
+  .due-date {
+    font-size: 0.9rem;
+    color: #666;
+    
+    &.overdue {
+      color: #f44336;
+      font-weight: 600;
+    }
+  }
+
+  .assigned-to {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+
+    button {
+      min-width: 60px;
+      font-size: 0.8rem;
+    }
+
+    .quick-status {
+      min-width: 120px;
+      margin: 0;
+      
+      ::ng-deep .mat-mdc-form-field-wrapper {
+        padding: 0;
+      }
+      
+      ::ng-deep .mat-mdc-form-field-infix {
+        padding: 8px 0;
+        min-height: auto;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .todo-container {
+    padding: 15px;
+  }
+
+  .todos-table {
+    font-size: 0.8rem;
+
+    th, td {
+      padding: 8px 4px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      gap: 4px;
+
+      button {
+        min-width: 50px;
+        font-size: 0.7rem;
+      }
+
+      .quick-status {
+        min-width: 100px;
+      }
+    }
+  }
+}

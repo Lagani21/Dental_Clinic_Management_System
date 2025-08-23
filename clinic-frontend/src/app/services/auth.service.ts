@@ -138,15 +138,21 @@ export class AuthService {
 
   // Token management
   private setToken(token: string): void {
-    localStorage.setItem('access_token', token);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('access_token', token);
+    }
   }
 
   private setRefreshToken(token: string): void {
-    localStorage.setItem('refresh_token', token);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('refresh_token', token);
+    }
   }
 
   private setUser(user: User): void {
-    localStorage.setItem('current_user', JSON.stringify(user));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('current_user', JSON.stringify(user));
+    }
   }
 
   public getToken(): string | null {
@@ -166,9 +172,11 @@ export class AuthService {
   }
 
   private clearTokens(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('current_user');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('current_user');
+    }
   }
 
   private handleError(error: any): Observable<never> {

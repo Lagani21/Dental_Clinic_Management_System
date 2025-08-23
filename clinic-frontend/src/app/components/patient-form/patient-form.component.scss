@@ -1,0 +1,180 @@
+.patient-form-container {
+  width: 100%;
+  max-width: 700px;
+  min-width: 600px;
+  padding: 0;
+  overflow: visible;
+  
+  @media (max-width: 768px) {
+    min-width: 320px;
+    max-width: 95vw;
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    color: var(--primary-color, #1976d2);
+    font-weight: 500;
+
+    mat-icon {
+      color: var(--primary-color, #1976d2);
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+
+    mat-form-field {
+      flex: 1;
+      min-width: 0; // Prevent flex items from overflowing
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 8px;
+      
+      mat-form-field {
+        width: 100%;
+      }
+    }
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .age-display {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .form-section {
+    margin: 24px 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+
+    h3 {
+      margin: 0 0 16px 0;
+      color: var(--secondary-color, #666);
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 0 0 0;
+    margin-top: 24px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+
+    button {
+      min-width: 100px;
+
+      &[mat-raised-button] {
+        background-color: var(--primary-color, #1976d2);
+        color: white;
+
+        &:hover:not([disabled]) {
+          background-color: var(--primary-dark, #1565c0);
+        }
+
+        &[disabled] {
+          background-color: #ccc;
+          color: #999;
+        }
+      }
+
+      mat-spinner {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  // Material Form Field Customization
+  ::ng-deep .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      .mat-mdc-form-field-flex {
+        .mat-mdc-floating-label {
+          color: var(--text-secondary, #666);
+        }
+      }
+    }
+
+    &.mat-focused .mat-mdc-form-field-flex .mat-mdc-floating-label {
+      color: var(--primary-color, #1976d2);
+    }
+
+    .mat-mdc-form-field-outline {
+      .mat-mdc-form-field-outline-start,
+      .mat-mdc-form-field-outline-end,
+      .mat-mdc-form-field-outline-gap {
+        border-color: var(--border-color, #e0e0e0);
+      }
+    }
+
+    &.mat-focused .mat-mdc-form-field-outline {
+      .mat-mdc-form-field-outline-start,
+      .mat-mdc-form-field-outline-end,
+      .mat-mdc-form-field-outline-gap {
+        border-color: var(--primary-color, #1976d2);
+      }
+    }
+
+    &.mat-form-field-invalid .mat-mdc-form-field-outline {
+      .mat-mdc-form-field-outline-start,
+      .mat-mdc-form-field-outline-end,
+      .mat-mdc-form-field-outline-gap {
+        border-color: var(--error-color, #f44336);
+      }
+    }
+  }
+
+  // Error message styling
+  ::ng-deep .mat-mdc-form-field-error {
+    color: var(--error-color, #f44336);
+    font-size: 12px;
+  }
+
+  // Success/Error Snackbar Colors
+  ::ng-deep .success-snackbar {
+    background-color: var(--success-color, #4caf50) !important;
+    color: white !important;
+  }
+
+  ::ng-deep .error-snackbar {
+    background-color: var(--error-color, #f44336) !important;
+    color: white !important;
+  }
+}
+
+// Dialog content padding adjustment
+::ng-deep .mat-mdc-dialog-content {
+  padding: 20px 24px;
+  margin: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+::ng-deep .mat-mdc-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}
+
+::ng-deep .mat-mdc-dialog-container {
+  overflow: visible;
+}
+
+::ng-deep .mat-mdc-dialog-title {
+  padding: 20px 24px 0 24px;
+  margin: 0;
+}

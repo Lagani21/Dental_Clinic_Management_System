@@ -1,0 +1,184 @@
+<div class="todo-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        Todo Management
+      </mat-card-title>
+      <mat-card-subtitle>Manage tasks and assignments for the clinic</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="actions-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search todos</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Search by title or description">
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-select [formControl]="statusFilter">
+            <mat-option value="all">All Statuses</mat-option>
+            <mat-option value="pending">Pending</mat-option>
+            <mat-option value="in_progress">In Progress</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+            <mat-option value="cancelled">Cancelled</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Priority</mat-label>
+          <mat-select [formControl]="priorityFilter">
+            <mat-option value="all">All Priorities</mat-option>
+            <mat-option value="low">Low</mat-option>
+            <mat-option value="medium">Medium</mat-option>
+            <mat-option value="high">High</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" (click)="addTodo()" *ngIf="canManageTodos()">
+          Add Todo
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading todos...</p>
+      </div>
+
+      <div *ngIf="!loading && filteredTodos.length === 0" class="no-data">
+        <h3>No todos found</h3>
+        <p *ngIf="searchControl.value || statusFilter.value !== 'all' || priorityFilter.value !== 'all'">
+          Try adjusting your search criteria or filters
+        </p>
+        <p *ngIf="!searchControl.value && statusFilter.value === 'all' && priorityFilter.value === 'all'">
+          No todos have been added yet
+        </p>
+      </div>
+
+      <div *ngIf="!loading && filteredTodos.length > 0" class="table-container">
+        <table mat-table [dataSource]="filteredTodos" class="todos-table">
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let todo">
+              <div class="todo-title">
+                <strong>{{ todo.title }}</strong>
+                <div class="todo-meta">
+                  <span class="priority-chip" [style.background-color]="getPriorityColor(todo.priority)">
+                    {{ todo.priority | titlecase }}
+                  </span>
+                  <span class="status-chip" [style.background-color]="getStatusColor(todo.status)">
+                    {{ todo.status.replace('_', ' ') | titlecase }}
+                  </span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let todo">
+              <div class="todo-description">
+                {{ todo.description || 'No description' | slice:0:60 }}{{ (todo.description || '').length > 60 ? '...' : '' }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Priority Column -->
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>Priority</th>
+            <td mat-cell *matCellDef="let todo">
+              <span class="priority-badge" [style.background-color]="getPriorityColor(todo.priority)">
+                {{ todo.priority | titlecase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let todo">
+              <span class="status-badge" [style.background-color]="getStatusColor(todo.status)">
+                {{ todo.status.replace('_', ' ') | titlecase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Due Date Column -->
+          <ng-container matColumnDef="dueDate">
+            <th mat-header-cell *matHeaderCellDef>Due Date</th>
+            <td mat-cell *matCellDef="let todo">
+              <span class="due-date" [class.overdue]="isOverdue(todo.due_date)">
+                {{ formatDate(todo.due_date) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Assigned To Column -->
+          <ng-container matColumnDef="assignedTo">
+            <th mat-header-cell *matHeaderCellDef>Assigned To</th>
+            <td mat-cell *matCellDef="let todo">
+              <span class="assigned-to">
+                {{ todo.assigned_to ? 'User ' + todo.assigned_to : 'Unassigned' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let todo">
+              <div class="action-buttons">
+                <button 
+                  mat-button 
+                  color="primary" 
+                  (click)="viewTodo(todo)"
+                  matTooltip="View Details"
+                  *ngIf="canViewTodoDetails()">
+                  View
+                </button>
+                
+                <button 
+                  mat-button 
+                  color="accent" 
+                  (click)="editTodo(todo)"
+                  matTooltip="Edit Todo"
+                  *ngIf="canManageTodos()">
+                  Edit
+                </button>
+                
+                <button 
+                  mat-button 
+                  color="warn" 
+                  (click)="deleteTodo(todo)"
+                  matTooltip="Delete Todo"
+                  *ngIf="canManageTodos()">
+                  Delete
+                </button>
+
+                <!-- Quick Status Update -->
+                <mat-form-field appearance="outline" class="quick-status">
+                  <mat-label>Status</mat-label>
+                  <mat-select [value]="todo.status" (selectionChange)="updateTodoStatus(todo, $event.value)">
+                    <mat-option value="pending">Pending</mat-option>
+                    <mat-option value="in_progress">In Progress</mat-option>
+                    <mat-option value="completed">Completed</mat-option>
+                    <mat-option value="cancelled">Cancelled</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

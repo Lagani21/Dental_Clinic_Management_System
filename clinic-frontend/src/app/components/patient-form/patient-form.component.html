@@ -1,0 +1,120 @@
+<div class="patient-form-container">
+  <h2 mat-dialog-title>
+    {{ isEditMode ? 'Edit Patient' : 'Add New Patient' }}
+  </h2>
+
+  <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="first_name" placeholder="Enter first name">
+        <mat-error *ngIf="patientForm.get('first_name')?.invalid && patientForm.get('first_name')?.touched">
+          {{ getErrorMessage('first_name') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="last_name" placeholder="Enter last name">
+        <mat-error *ngIf="patientForm.get('last_name')?.invalid && patientForm.get('last_name')?.touched">
+          {{ getErrorMessage('last_name') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter email address">
+        <mat-error *ngIf="patientForm.get('email')?.invalid && patientForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" placeholder="Enter phone number">
+        <mat-error *ngIf="patientForm.get('phone')?.invalid && patientForm.get('phone')?.touched">
+          {{ getErrorMessage('phone') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Date of Birth</mat-label>
+        <input matInput type="date" formControlName="date_of_birth" placeholder="Select date of birth">
+        <div class="age-display" *ngIf="patientForm.get('date_of_birth')?.value">
+          Age: {{ calculateAge(patientForm.get('date_of_birth')?.value) }}
+        </div>
+        <mat-error *ngIf="patientForm.get('date_of_birth')?.invalid && patientForm.get('date_of_birth')?.touched">
+          {{ getErrorMessage('date_of_birth') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Assigned Doctor</mat-label>
+        <mat-select formControlName="assigned_doctor" placeholder="Select a doctor">
+          <mat-option value="">None</mat-option>
+          <mat-option *ngFor="let doctor of doctors" [value]="doctor.user">
+            Dr. {{ doctor.user_details.first_name }} {{ doctor.user_details.last_name }}
+            ({{ doctor.user_details.specialization }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Address</mat-label>
+              <textarea matInput formControlName="address" placeholder="Enter full address" rows="3"></textarea>
+      <mat-error *ngIf="patientForm.get('address')?.invalid && patientForm.get('address')?.touched">
+        {{ getErrorMessage('address') }}
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-section">
+      <h3>Emergency Contact</h3>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Emergency Contact Name</mat-label>
+          <input matInput formControlName="emergency_contact_name" placeholder="Enter contact name">
+          <mat-error *ngIf="patientForm.get('emergency_contact_name')?.invalid && patientForm.get('emergency_contact_name')?.touched">
+            {{ getErrorMessage('emergency_contact_name') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Emergency Contact Phone</mat-label>
+          <input matInput formControlName="emergency_contact_phone" placeholder="Enter contact phone">
+          <mat-error *ngIf="patientForm.get('emergency_contact_phone')?.invalid && patientForm.get('emergency_contact_phone')?.touched">
+            {{ getErrorMessage('emergency_contact_phone') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Medical Information</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Medical History</mat-label>
+        <textarea matInput formControlName="medical_history" 
+                  placeholder="Enter any relevant medical history" rows="3"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Allergies</mat-label>
+        <textarea matInput formControlName="allergies" 
+                  placeholder="Enter any known allergies" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div mat-dialog-actions class="form-actions">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="loading">
+      {{ isEditMode ? 'Update' : 'Create' }} Patient
+    </button>
+  </div>
+</div>

@@ -13,7 +13,7 @@ class PatientSerializer(serializers.ModelSerializer):
     """
     Serializer for Patient model
     """
-    full_name = serializers.CharField(source='full_name', read_only=True)
+    full_name = serializers.CharField(read_only=True)
     assigned_doctor_details = UserProfileSerializer(source='assigned_doctor', read_only=True)
     
     class Meta:

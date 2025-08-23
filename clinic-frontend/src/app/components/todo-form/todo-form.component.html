@@ -1,0 +1,139 @@
+<div class="todo-form-container">
+  <h2 mat-dialog-title>
+    {{ viewOnly ? 'Todo Details' : (isEditMode ? 'Edit Todo' : 'Add New Todo') }}
+  </h2>
+
+  <form [formGroup]="todoForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter todo title">
+      <mat-error *ngIf="todoForm.get('title')?.invalid && todoForm.get('title')?.touched">
+        {{ getErrorMessage('title') }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Enter detailed description" rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Priority</mat-label>
+        <mat-select formControlName="priority" placeholder="Select priority">
+          <mat-option value="low">
+            <span class="priority-option">
+              <span class="priority-dot low"></span>
+              Low
+            </span>
+          </mat-option>
+          <mat-option value="medium">
+            <span class="priority-option">
+              <span class="priority-dot medium"></span>
+              Medium
+            </span>
+          </mat-option>
+          <mat-option value="high">
+            <span class="priority-option">
+              <span class="priority-dot high"></span>
+              High
+            </span>
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="todoForm.get('priority')?.invalid && todoForm.get('priority')?.touched">
+          {{ getErrorMessage('priority') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status" placeholder="Select status">
+          <mat-option value="pending">
+            <span class="status-option">
+              <span class="status-dot pending"></span>
+              Pending
+            </span>
+          </mat-option>
+          <mat-option value="in_progress">
+            <span class="status-option">
+              <span class="status-dot in-progress"></span>
+              In Progress
+            </span>
+          </mat-option>
+          <mat-option value="completed">
+            <span class="status-option">
+              <span class="status-dot completed"></span>
+              Completed
+            </span>
+          </mat-option>
+          <mat-option value="cancelled">
+            <span class="status-option">
+              <span class="status-dot cancelled"></span>
+              Cancelled
+            </span>
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="todoForm.get('status')?.invalid && todoForm.get('status')?.touched">
+          {{ getErrorMessage('status') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Due Date</mat-label>
+        <input matInput type="date" formControlName="due_date" placeholder="Select due date">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Assign To</mat-label>
+        <mat-select formControlName="assigned_to" placeholder="Select assignee">
+          <mat-option value="">Unassigned</mat-option>
+          <mat-option *ngFor="let user of users" [value]="user.id">
+            {{ user.role === 'doctor' ? 'Dr. ' + user.first_name + ' ' + user.last_name : user.first_name + ' ' + user.last_name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Display current values in view mode -->
+    <div *ngIf="viewOnly && data.todo" class="view-only-info">
+      <div class="info-row">
+        <strong>Created by:</strong> 
+        <span>{{ getUserName(data.todo.created_by) }}</span>
+      </div>
+      <div class="info-row">
+        <strong>Created:</strong> 
+        <span>{{ data.todo.created_at | date:'medium' }}</span>
+      </div>
+      <div class="info-row" *ngIf="data.todo.updated_at !== data.todo.created_at">
+        <strong>Last updated:</strong> 
+        <span>{{ data.todo.updated_at | date:'medium' }}</span>
+      </div>
+    </div>
+  </form>
+
+  <div mat-dialog-actions class="form-actions">
+    <button mat-button type="button" (click)="onCancel()">
+      {{ viewOnly ? 'Close' : 'Cancel' }}
+    </button>
+    
+    <button 
+      *ngIf="viewOnly" 
+      mat-raised-button 
+      color="primary" 
+      (click)="onEdit()">
+      Edit Todo
+    </button>
+    
+    <button 
+      *ngIf="!viewOnly" 
+      mat-raised-button 
+      color="primary" 
+      type="submit" 
+      (click)="onSubmit()" 
+      [disabled]="loading || todoForm.invalid">
+      {{ isEditMode ? 'Update' : 'Create' }} Todo
+    </button>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+<div class="inventory-form-container">
+  <h2 mat-dialog-title>
+    {{ viewOnly ? 'Inventory Item Details' : (isEditMode ? 'Edit Inventory Item' : 'Add New Inventory Item') }}
+  </h2>
+
+  <form [formGroup]="inventoryForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Item Name</mat-label>
+        <input matInput formControlName="name" placeholder="Enter item name">
+        <mat-error *ngIf="inventoryForm.get('name')?.invalid && inventoryForm.get('name')?.touched">
+          {{ getErrorMessage('name') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" placeholder="Select category">
+          <mat-option value="equipment">Equipment</mat-option>
+          <mat-option value="supplies">Supplies</mat-option>
+          <mat-option value="medication">Medication</mat-option>
+          <mat-option value="consumables">Consumables</mat-option>
+        </mat-select>
+        <mat-error *ngIf="inventoryForm.get('category')?.invalid && inventoryForm.get('category')?.touched">
+          {{ getErrorMessage('category') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Enter item description" rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>SKU</mat-label>
+        <input matInput formControlName="sku" placeholder="Enter SKU code">
+        <mat-error *ngIf="inventoryForm.get('sku')?.invalid && inventoryForm.get('sku')?.touched">
+          {{ getErrorMessage('sku') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Supplier</mat-label>
+        <input matInput formControlName="supplier" placeholder="Enter supplier name">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Current Stock</mat-label>
+        <input matInput type="number" formControlName="current_stock" placeholder="Enter current stock">
+        <mat-error *ngIf="inventoryForm.get('current_stock')?.invalid && inventoryForm.get('current_stock')?.touched">
+          {{ getErrorMessage('current_stock') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Minimum Stock</mat-label>
+        <input matInput type="number" formControlName="minimum_stock" placeholder="Enter minimum stock">
+        <mat-error *ngIf="inventoryForm.get('minimum_stock')?.invalid && inventoryForm.get('minimum_stock')?.touched">
+          {{ getErrorMessage('minimum_stock') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Unit Cost ($)</mat-label>
+      <input matInput type="number" formControlName="unit_cost" placeholder="Enter unit cost" step="0.01">
+      <mat-error *ngIf="inventoryForm.get('unit_cost')?.invalid && inventoryForm.get('unit_cost')?.touched">
+        {{ getErrorMessage('unit_cost') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Display current values in view mode -->
+    <div *ngIf="viewOnly && data.item" class="view-only-info">
+      <div class="info-row">
+        <strong>Stock Status:</strong> 
+        <span [class]="data.item.is_low_stock ? 'low-stock' : 'normal-stock'">
+          {{ data.item.is_low_stock ? 'Low Stock' : 'Normal Stock' }}
+        </span>
+      </div>
+      <div class="info-row">
+        <strong>Created:</strong> 
+        <span>{{ data.item.created_at | date:'medium' }}</span>
+      </div>
+      <div class="info-row" *ngIf="data.item.updated_at !== data.item.created_at">
+        <strong>Last updated:</strong> 
+        <span>{{ data.item.updated_at | date:'medium' }}</span>
+      </div>
+    </div>
+  </form>
+
+  <div mat-dialog-actions class="form-actions">
+    <button mat-button type="button" (click)="onCancel()">
+      {{ viewOnly ? 'Close' : 'Cancel' }}
+    </button>
+    
+    <button 
+      *ngIf="viewOnly" 
+      mat-raised-button 
+      color="primary" 
+      (click)="onEdit()">
+      Edit Item
+    </button>
+    
+    <button 
+      *ngIf="!viewOnly" 
+      mat-raised-button 
+      color="primary" 
+      type="submit" 
+      (click)="onSubmit()" 
+      [disabled]="loading || inventoryForm.invalid">
+      {{ isEditMode ? 'Update' : 'Create' }} Item
+    </button>
+  </div>
+</div>

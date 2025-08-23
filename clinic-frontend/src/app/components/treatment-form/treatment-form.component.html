@@ -1,0 +1,92 @@
+<div class="treatment-form-container">
+  <h2 mat-dialog-title>
+    {{ viewOnly ? 'Treatment Details' : (isEditMode ? 'Edit Treatment' : 'Add New Treatment') }}
+  </h2>
+
+  <form [formGroup]="treatmentForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Treatment Name</mat-label>
+        <input matInput formControlName="name" placeholder="Enter treatment name">
+        <mat-error *ngIf="treatmentForm.get('name')?.invalid && treatmentForm.get('name')?.touched">
+          {{ getErrorMessage('name') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" placeholder="Select category">
+          <mat-option value="preventive">Preventive</mat-option>
+          <mat-option value="restorative">Restorative</mat-option>
+          <mat-option value="cosmetic">Cosmetic</mat-option>
+          <mat-option value="surgical">Surgical</mat-option>
+          <mat-option value="orthodontic">Orthodontic</mat-option>
+          <mat-option value="endodontic">Endodontic</mat-option>
+          <mat-option value="periodontic">Periodontic</mat-option>
+          <mat-option value="other">Other</mat-option>
+        </mat-select>
+        <mat-error *ngIf="treatmentForm.get('category')?.invalid && treatmentForm.get('category')?.touched">
+          {{ getErrorMessage('category') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Base Cost ($)</mat-label>
+        <input matInput type="number" formControlName="base_cost" placeholder="Enter base cost">
+        <mat-error *ngIf="treatmentForm.get('base_cost')?.invalid && treatmentForm.get('base_cost')?.touched">
+          {{ getErrorMessage('base_cost') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Duration (minutes)</mat-label>
+        <input matInput type="number" formControlName="duration_minutes" placeholder="Enter duration">
+        <mat-error *ngIf="treatmentForm.get('duration_minutes')?.invalid && treatmentForm.get('duration_minutes')?.touched">
+          {{ getErrorMessage('duration_minutes') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Enter detailed description" rows="4"></textarea>
+      <mat-error *ngIf="treatmentForm.get('description')?.invalid && treatmentForm.get('description')?.touched">
+        {{ getErrorMessage('description') }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="is_active" placeholder="Select status">
+        <mat-option [value]="true">Active</mat-option>
+        <mat-option [value]="false">Inactive</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+  <div mat-dialog-actions class="form-actions">
+    <button mat-button type="button" (click)="onCancel()">
+      {{ viewOnly ? 'Close' : 'Cancel' }}
+    </button>
+    
+    <button 
+      *ngIf="viewOnly" 
+      mat-raised-button 
+      color="primary" 
+      (click)="onEdit()">
+      Edit Treatment
+    </button>
+    
+    <button 
+      *ngIf="!viewOnly" 
+      mat-raised-button 
+      color="primary" 
+      type="submit" 
+      (click)="onSubmit()" 
+      [disabled]="loading || treatmentForm.invalid">
+      {{ isEditMode ? 'Update' : 'Create' }} Treatment
+    </button>
+  </div>
+</div>
