@@ -70,19 +70,7 @@ export class DashboardComponent implements OnInit {
     this.initializeCalendar();
   }
 
-  get welcomeMessage(): string {
-    if (!this.currentUser) return 'Welcome to Dental Clinic Management';
-    
-    const time = new Date().getHours();
-    let greeting = 'Good morning';
-    if (time >= 12) greeting = 'Good afternoon';
-    if (time >= 18) greeting = 'Good evening';
-    
-    const name = this.currentUser.first_name || this.currentUser.username;
-    const role = this.currentUser.role === 'admin' ? 'Administrator' : 'Doctor';
-    
-    return `${greeting}, ${name}! (${role})`;
-  }
+
 
   private loadData(): void {
     // Load real appointments data

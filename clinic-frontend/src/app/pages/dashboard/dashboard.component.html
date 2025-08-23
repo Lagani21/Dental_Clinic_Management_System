@@ -1,5 +1,4 @@
 <div class="dashboard-container">
-  <h1 class="welcome-title">{{ welcomeMessage }}</h1>
   
   <!-- Stats Cards -->
   <div class="stats-grid">
@@ -52,29 +51,34 @@
   <div class="main-navigation">
     <h2>Management Modules</h2>
     <div class="navigation-grid">
-      <button mat-raised-button color="primary" class="nav-btn" routerLink="/patients">
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/patients" 
+              matTooltip="Manage patient records, view medical history, and handle patient information"
+              matTooltipPosition="above">
         <span>Patients</span>
-        <small>Manage patient records</small>
       </button>
       
-      <button mat-raised-button color="primary" class="nav-btn" routerLink="/doctors" *ngIf="isAdmin()">
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/doctors" *ngIf="isAdmin()"
+              matTooltip="Manage doctor profiles, specializations, and staff information"
+              matTooltipPosition="above">
         <span>Doctors</span>
-        <small>Manage doctor profiles</small>
       </button>
       
-      <button mat-raised-button color="primary" class="nav-btn" routerLink="/inventory">
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/inventory"
+              matTooltip="Manage medical supplies, equipment, and track stock levels"
+              matTooltipPosition="above">
         <span>Inventory</span>
-        <small>Manage medical supplies</small>
       </button>
       
-      <button mat-raised-button color="primary" class="nav-btn" routerLink="/treatments">
+      <button mat-raised-button color="primary" class="nav-btn" routerLink="/treatments"
+              matTooltip="Manage treatment catalog, procedures, and service offerings"
+              matTooltipPosition="above">
         <span>Treatments</span>
-        <small>Manage treatment catalog</small>
       </button>
       
-      <button mat-raised-button color="accent" class="nav-btn" routerLink="/todo">
+      <button mat-raised-button color="accent" class="nav-btn" routerLink="/todo"
+              matTooltip="Manage tasks, reminders, and track clinic activities"
+              matTooltipPosition="above">
         <span>TODO List</span>
-        <small>Manage tasks & reminders</small>
       </button>
     </div>
   </div>

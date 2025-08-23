@@ -10,6 +10,25 @@
 .clinic-title {
   font-weight: 500;
   margin-left: 10px;
+  color: white !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  min-width: auto !important;
+  line-height: 1.2;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: #e3f2fd !important;
+    transform: scale(1.02);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+  
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }
 
 .sidenav-container {
