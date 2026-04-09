@@ -12,6 +12,7 @@ from app.models.audit import AuditLog
 from app.models.clinical_records import (
     DentalChart, ClinicalNote, ClinicalNoteAmend, PerioExam, PerioMeasurement, NotationSystem
 )
+from app.models.account_permissions import AccountPermission, PermissionAuditLog
 
 __all__ = [
     "Clinic",
@@ -26,4 +27,5 @@ __all__ = [
     "AuditLog",
     "DentalChart", "ClinicalNote", "ClinicalNoteAmend",
     "PerioExam", "PerioMeasurement", "NotationSystem",
+    "AccountPermission", "PermissionAuditLog",
 ]

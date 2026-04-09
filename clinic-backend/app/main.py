@@ -8,6 +8,9 @@ from app.config import settings
 from app.routers import auth, patients, appointments, users
 from app.routers import documents
 from app.routers import clinical
+from app.routers import billing
+from app.routers import admin
+from app.routers import prescriptions
 
 
 @asynccontextmanager
@@ -41,6 +44,9 @@ app.include_router(patients.router, prefix="/api/v1")
 app.include_router(appointments.router, prefix="/api/v1")
 app.include_router(documents.router, prefix="/api/v1")
 app.include_router(clinical.router, prefix="/api/v1")
+app.include_router(billing.router, prefix="/api/v1")
+app.include_router(admin.router, prefix="/api/v1")
+app.include_router(prescriptions.router, prefix="/api/v1")
 
 # Serve uploaded files
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")

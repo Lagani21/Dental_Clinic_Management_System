@@ -96,30 +96,61 @@ export const appointmentsApi = {
   doctors:      ()         => api.get('/appointments/doctors'),
 }
 
-// ── Treatments ────────────────────────────────────────────────────────────────
+// ── Treatments (records per patient) ─────────────────────────────────────────
 export const treatmentsApi = {
   list:   (params)   => api.get('/treatments',          { params }),
   get:    (id)       => api.get(`/treatments/${id}`),
   create: (data)     => api.post('/treatments',         data),
   update: (id, data) => api.patch(`/treatments/${id}`,  data),
   delete: (id)       => api.delete(`/treatments/${id}`),
-  // Catalog
   catalog: {
-    list:   (params) => api.get('/treatment-catalog',     { params }),
-    create: (data)   => api.post('/treatment-catalog',    data),
+    list:   (params) => api.get('/treatment-catalog',         { params }),
+    create: (data)   => api.post('/treatment-catalog',        data),
     update: (id, d)  => api.patch(`/treatment-catalog/${id}`, d),
     delete: (id)     => api.delete(`/treatment-catalog/${id}`),
   },
 }
 
+// ── Treatment Plans (TP-001 / TP-002) ────────────────────────────────────────
+export const treatmentPlansApi = {
+  // Plan CRUD
+  list:          (params)        => api.get('/treatment-plans',                        { params }),
+  get:           (id)            => api.get(`/treatment-plans/${id}`),
+  create:        (data)          => api.post('/treatment-plans',                       data),
+  update:        (id, data)      => api.patch(`/treatment-plans/${id}`,                data),
+  delete:        (id)            => api.delete(`/treatment-plans/${id}`),
+
+  // Versioning
+  versions:      (id)            => api.get(`/treatment-plans/${id}/versions`),
+
+  // Phases within a plan
+  addPhase:      (id, data)      => api.post(`/treatment-plans/${id}/phases`,          data),
+  updatePhase:   (id, phId, d)   => api.patch(`/treatment-plans/${id}/phases/${phId}`, d),
+  deletePhase:   (id, phId)      => api.delete(`/treatment-plans/${id}/phases/${phId}`),
+
+  // Procedures within a phase
+  addProcedure:  (id, phId, d)   => api.post(`/treatment-plans/${id}/phases/${phId}/procedures`,          d),
+  updateProcedure:(id,phId,prId,d)=> api.patch(`/treatment-plans/${id}/phases/${phId}/procedures/${prId}`,d),
+  deleteProcedure:(id,phId,prId) => api.delete(`/treatment-plans/${id}/phases/${phId}/procedures/${prId}`),
+
+  // Consent
+  sendConsent:   (id, data)      => api.post(`/treatment-plans/${id}/consent`,         data),
+  signConsent:   (id, data)      => api.patch(`/treatment-plans/${id}/consent`,        data),
+
+  // PDF / print
+  pdfUrl:        (id)            => `/api/v1/treatment-plans/${id}/pdf`,
+}
+
 // ── Billing ───────────────────────────────────────────────────────────────────
 export const billingApi = {
-  list:          (params)   => api.get('/bills',               { params }),
-  get:           (id)       => api.get(`/bills/${id}`),
-  create:        (data)     => api.post('/bills',              data),
-  update:        (id, data) => api.patch(`/bills/${id}`,       data),
-  updateStatus:  (id, data) => api.patch(`/bills/${id}/status`, data),
-  delete:        (id)       => api.delete(`/bills/${id}`),
+  list:          (params)        => api.get('/billing',                        { params }),
+  get:           (id)            => api.get(`/billing/${id}`),
+  create:        (data)          => api.post('/billing',                       data),
+  update:        (id, data)      => api.patch(`/billing/${id}`,                data),
+  recordPayment: (id, data)      => api.patch(`/billing/${id}/payment`,        data),
+  delete:        (id)            => api.delete(`/billing/${id}`),
+  pdfUrl:        (id, fmt='a4')  => `/api/v1/billing/${id}/pdf?format=${fmt}`,
+  send:          (id, data)      => api.post(`/billing/${id}/send`,            data),
 }
 
 // ── Inventory ─────────────────────────────────────────────────────────────────
@@ -143,4 +174,24 @@ export const usersApi = {
 export const doctorsApi = {
   list: (params) => api.get('/doctors', { params }),
   get:  (id)     => api.get(`/doctors/${id}`),
+}
+
+// ── Prescriptions ─────────────────────────────────────────────────────────────
+export const prescriptionsApi = {
+  list:   (params)      => api.get('/prescriptions',          { params }),
+  get:    (id)          => api.get(`/prescriptions/${id}`),
+  create: (data)        => api.post('/prescriptions',          data),
+  update: (id, data)    => api.patch(`/prescriptions/${id}`,   data),
+  delete: (id)          => api.delete(`/prescriptions/${id}`),
+}
+
+// ── Admin Accounts ────────────────────────────────────────────────────────────
+export const adminApi = {
+  listAccounts:      (params)      => api.get('/admin/accounts',                     { params }),
+  getAccount:        (id)          => api.get(`/admin/accounts/${id}`),
+  createAccount:     (data)        => api.post('/admin/accounts',                    data),
+  updateAccount:     (id, data)    => api.patch(`/admin/accounts/${id}`,             data),
+  updatePermissions: (id, toggles) => api.patch(`/admin/accounts/${id}/permissions`, toggles),
+  deleteAccount:     (id)          => api.delete(`/admin/accounts/${id}`),
+  getAuditLog:       (id)          => api.get(`/admin/accounts/${id}/audit`),
 }

@@ -12,10 +12,12 @@ if TYPE_CHECKING:
 
 
 class UserRole(str, enum.Enum):
-    SUPERADMIN = "superadmin"       # Platform-level (DentFlow team)
-    CLINIC_OWNER = "clinic_owner"   # Owns/manages a clinic
-    DOCTOR = "doctor"               # Treats patients
-    RECEPTIONIST = "receptionist"   # Front desk, scheduling
+    SUPERADMIN   = "superadmin"    # Platform-level (DentFlow team)
+    CLINIC_OWNER = "clinic_owner"  # Owns/manages a clinic
+    DOCTOR       = "doctor"        # Treats patients
+    RECEPTIONIST = "receptionist"  # Front desk, scheduling
+    NURSE        = "nurse"         # Clinical support
+    COMPOUNDER   = "compounder"    # Pharmacy / dispensary
 
 
 class User(Base, UUIDMixin, TimestampMixin):

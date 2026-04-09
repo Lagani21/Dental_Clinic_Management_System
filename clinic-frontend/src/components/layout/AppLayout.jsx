@@ -3,12 +3,12 @@ import { LogOut } from 'lucide-react'
 import useAuthStore from '../../store/authStore'
 
 const NAV_ITEMS = [
-  { to: '/patients',   label: 'Patients' },
-  { to: '/schedule',   label: 'Schedule' },
-  { to: '/treatments', label: 'Treatments' },
-  { to: '/inventory',  label: 'Inventory' },
-  { to: '/billing',    label: 'Billing' },
-  { to: '/settings',   label: 'Settings' },
+  { to: '/patients',      label: 'Patients' },
+  { to: '/schedule',      label: 'Schedule' },
+  { to: '/treatments',    label: 'Treatments' },
+  { to: '/prescriptions', label: 'Prescriptions' },
+  { to: '/billing',       label: 'Billing' },
+  { to: '/settings',      label: 'Settings' },
 ]
 
 export default function AppLayout() {

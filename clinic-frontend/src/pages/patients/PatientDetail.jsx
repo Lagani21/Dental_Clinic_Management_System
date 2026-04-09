@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, Phone, Mail, MapPin, Droplets, ShieldCheck, TriangleAlert, Pencil, X, Check, Clock, FileText, Trash2, Upload } from 'lucide-react'
+import { ArrowLeft, Phone, Mail, MapPin, Droplets, ShieldCheck, TriangleAlert, Pencil, X, Check, Clock, FileText, Trash2, Upload, Pill } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { patientsApi, medicalHistoryApi, documentsApi, clinicalApi } from '../../services/api'
+import { useNavigate } from 'react-router-dom'
 import DentalChart from '../../components/clinical/DentalChart'
 import ClinicalNotes from '../../components/clinical/ClinicalNotes'
 import PerioChart from '../../components/clinical/PerioChart'
@@ -619,7 +620,8 @@ function ClinicalTab({ patientId }) {
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 export default function PatientDetail() {
-  const { id } = useParams()
+  const { id }      = useParams()
+  const navigate    = useNavigate()
   const [activeTab, setActiveTab] = useState('info')
 
   const { data: patient, isLoading } = useQuery({
@@ -688,6 +690,16 @@ export default function PatientDetail() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Write Prescription shortcut */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => navigate(`/prescriptions?new=1&patient=${id}`)}
+          className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold border border-black text-black px-4 py-2 hover:bg-black hover:text-white transition-colors"
+        >
+          <Pill className="h-3.5 w-3.5" /> Write Prescription
+        </button>
       </div>
 
       {/* PM-002: Allergy alert — shown prominently below the header */}

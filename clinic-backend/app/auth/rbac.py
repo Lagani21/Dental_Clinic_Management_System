@@ -46,6 +46,14 @@ class CurrentUser:
     def is_receptionist(self) -> bool:
         return self.role == UserRole.RECEPTIONIST
 
+    @property
+    def is_nurse(self) -> bool:
+        return self.role == UserRole.NURSE
+
+    @property
+    def is_compounder(self) -> bool:
+        return self.role == UserRole.COMPOUNDER
+
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -98,5 +106,7 @@ def clinic_scope(current_user: CurrentUser, clinic_id: uuid.UUID) -> None:
 require_doctor_or_above = require_roles(UserRole.DOCTOR, UserRole.CLINIC_OWNER, UserRole.SUPERADMIN)
 require_owner_or_above = require_roles(UserRole.CLINIC_OWNER, UserRole.SUPERADMIN)
 require_any_staff = require_roles(
-    UserRole.RECEPTIONIST, UserRole.DOCTOR, UserRole.CLINIC_OWNER, UserRole.SUPERADMIN
+    UserRole.RECEPTIONIST, UserRole.DOCTOR,
+    UserRole.NURSE, UserRole.COMPOUNDER,
+    UserRole.CLINIC_OWNER, UserRole.SUPERADMIN,
 )

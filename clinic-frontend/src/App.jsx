@@ -7,9 +7,13 @@ import Login from './pages/auth/Login'
 import Patients from './pages/patients/Patients'
 import PatientDetail from './pages/patients/PatientDetail'
 import Schedule from './pages/Schedule'
+import Treatments from './pages/Treatments'
+import Prescriptions from './pages/Prescriptions'
 import Billing from './pages/Billing'
 import Inventory from './pages/Inventory'
 import Settings from './pages/Settings'
+import AccountNew from './pages/admin/AccountNew'
+import AccountDetail from './pages/admin/AccountDetail'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -35,10 +39,14 @@ export default function App() {
             <Route path="/"           element={<Navigate to="/patients" replace />} />
             <Route path="/patients"          element={<Patients />} />
             <Route path="/patients/:id"     element={<PatientDetail />} />
-            <Route path="/schedule"   element={<Schedule />} />
-            <Route path="/billing"    element={<Billing />} />
-            <Route path="/inventory"  element={<Inventory />} />
-            <Route path="/settings"   element={<Settings />} />
+            <Route path="/schedule"       element={<Schedule />} />
+            <Route path="/treatments"     element={<Treatments />} />
+            <Route path="/prescriptions"  element={<Prescriptions />} />
+            <Route path="/billing"       element={<Billing />} />
+            <Route path="/inventory"     element={<Inventory />} />
+            <Route path="/settings"      element={<Settings />} />
+            <Route path="/settings/new"  element={<AccountNew />} />
+            <Route path="/settings/:id"  element={<AccountDetail />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
