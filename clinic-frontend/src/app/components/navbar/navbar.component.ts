@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -33,12 +34,12 @@ export class NavbarComponent implements OnInit {
   sidenavOpened = false;
 
   menuItems = [
-    { label: 'Dashboard', route: '/dashboard', icon: 'dashboard', roles: ['admin', 'doctor'] },
-    { label: 'Patients', route: '/patients', icon: 'people', roles: ['admin', 'doctor'] },
-    { label: 'Appointments', route: '/appointments', icon: 'event', roles: ['admin', 'doctor'] },
-    { label: 'Billing', route: '/billing', icon: 'receipt', roles: ['admin', 'doctor'] },
-    { label: 'Inventory', route: '/inventory', icon: 'inventory', roles: ['admin'] },
-    { label: 'Profile', route: '/profile', icon: 'person', roles: ['admin', 'doctor'] }
+    { label: 'Dashboard', route: '/dashboard', roles: ['admin', 'doctor'] },
+    { label: 'Patients', route: '/patients', roles: ['admin', 'doctor'] },
+    { label: 'Appointments', route: '/appointments', roles: ['admin', 'doctor'] },
+    { label: 'Billing', route: '/billing', roles: ['admin', 'doctor'] },
+    { label: 'Inventory', route: '/inventory', roles: ['admin'] },
+    { label: 'Profile', route: '/profile', roles: ['admin', 'doctor'] }
   ];
 
   constructor(

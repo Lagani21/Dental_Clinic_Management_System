@@ -55,6 +55,12 @@ export class DashboardComponent implements OnInit {
   // Appointments
   todayAppointments: Appointment[] = [];
   allAppointments: Appointment[] = [];
+  
+  // Calendar view
+  calendarView: 'today' | 'week' | 'month' = 'month';
+  
+  // Quick todos
+  quickTodos: any[] = [];
 
   constructor(
     private authService: AuthService,
@@ -211,6 +217,21 @@ export class DashboardComponent implements OnInit {
 
   refreshCalendar(): void {
     this.loadData();
+  }
+
+  setCalendarView(view: 'today' | 'week' | 'month'): void {
+    this.calendarView = view;
+    this.generateCalendar();
+  }
+
+  addQuickTodo(): void {
+    // This would open a quick todo form
+    console.log('Add quick todo');
+  }
+
+  completeQuickTodo(todoId: number): void {
+    // This would mark the todo as complete
+    this.quickTodos = this.quickTodos.filter(todo => todo.id !== todoId);
   }
 
   getStatusColor(status: string): string {

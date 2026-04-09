@@ -3,6 +3,9 @@
 // Import Angular Material prebuilt theme that includes blue, green, red colors
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+/* Import Lato font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
 // Global styles with white background
 html, body { 
   height: 100%; 
@@ -11,9 +14,9 @@ html, body {
 
 body { 
   margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Lato', sans-serif;
   background-color: #ffffff;
-  color: #333333;
+  color: #011936;
 }
 
 // Ensure white background for main app container
@@ -24,42 +27,60 @@ app-root {
 }
 
 // Custom theme colors for utility classes  
-.primary-color { color: #3f51b5; }
-.accent-color { color: #4caf50; }
-.warn-color { color: #f44336; }
+.primary-color { color: #011936; }
+.accent-color { color: #1D7500; }
+.warn-color { color: #bd0000; }
 
 // Override Material Design colors to match your preferred scheme
 :root {
-  --mdc-theme-primary: #2196f3;
-  --mdc-theme-secondary: #4caf50;
-  --mdc-theme-error: #f44336;
+  --mdc-theme-primary: #011936;
+  --mdc-theme-secondary: #1D7500;
+  --mdc-theme-error: #bd0000;
   --mdc-theme-surface: #ffffff;
   --mdc-theme-background: #ffffff;
+  
+  // Custom CSS Variables for the new color scheme
+  --primary-green: #1D7500;
+  --primary-blue: #011936;
+  --primary-red: #bd0000;
+  --primary-green-light: #2a8a0f;
+  --primary-blue-light: #0a2a4a;
+  --primary-red-light: #d32f2f;
+  --white: #ffffff;
+  --light-gray: #f5f5f5;
+  --medium-gray: #e0e0e0;
+  --dark-gray: #333333;
+  --text-primary: #011936;
+  --text-secondary: #666666;
+  --success-color: #1D7500;
+  --error-color: #bd0000;
+  --warning-color: #ff9800;
+  --info-color: #011936;
 }
 
 // Custom color overrides for specific Material components
 .mat-mdc-raised-button.mat-primary {
-  --mdc-protected-button-container-color: #2196f3;
+  --mdc-protected-button-container-color: #011936;
 }
 
 .mat-mdc-raised-button.mat-accent {
-  --mdc-protected-button-container-color: #4caf50;
+  --mdc-protected-button-container-color: #1D7500;
 }
 
 .mat-mdc-raised-button.mat-warn {
-  --mdc-protected-button-container-color: #f44336;
+  --mdc-protected-button-container-color: #bd0000;
 }
 
 .mat-mdc-icon-button.mat-primary {
-  --mdc-icon-button-icon-color: #2196f3;
+  --mdc-icon-button-icon-color: #011936;
 }
 
 .mat-mdc-icon-button.mat-accent {
-  --mdc-icon-button-icon-color: #4caf50;
+  --mdc-icon-button-icon-color: #1D7500;
 }
 
 .mat-mdc-icon-button.mat-warn {
-  --mdc-icon-button-icon-color: #f44336;
+  --mdc-icon-button-icon-color: #bd0000;
 }
 
 // Layout helpers

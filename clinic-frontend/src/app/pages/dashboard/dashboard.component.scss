@@ -15,9 +15,9 @@
 
 .stat-card {
   transition: all 0.3s ease-in-out;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
   position: relative;
   overflow: hidden;
   
@@ -28,13 +28,13 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #1976d2, #42a5f5, #64b5f6);
+    background: linear-gradient(90deg, #011936, #1D7500, #0a2a4a);
   }
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(25, 118, 210, 0.15);
-    border-color: #1976d2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(1, 25, 54, 0.15);
+    border-color: #011936;
   }
 }
 
@@ -68,29 +68,31 @@
   font-size: 0.9rem;
 }
 
-.main-navigation {
-  margin-bottom: 40px;
+.todo-section {
+  text-align: center;
+  margin-bottom: 30px;
   
-  h2 {
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
+  .todo-btn {
+    padding: 15px 30px;
+    font-size: 1.1rem;
     font-weight: 600;
-    text-align: center;
-    position: relative;
+    border-radius: 8px;
+    background: #1D7500;
     
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 3px;
-      background: linear-gradient(90deg, #1976d2, #42a5f5);
-      border-radius: 2px;
+    &:hover {
+      background: #2a8a0f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(29, 117, 0, 0.3);
+    }
+    
+    span {
+      color: white;
     }
   }
+}
+
+.main-navigation {
+  margin-bottom: 40px;
 }
 
 .navigation-grid {
@@ -109,25 +111,10 @@
   font-weight: 500;
   height: 140px;
   text-align: center;
-  border-radius: 12px;
+  border-radius: 8px;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  &:hover::before {
-    left: 100%;
-  }
   
   span {
     font-size: 1.3rem;
@@ -137,23 +124,23 @@
   }
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   }
   
   &.mat-primary {
-    background: linear-gradient(135deg, #1976d2, #42a5f5);
+    background: #011936;
     
     &:hover {
-      background: linear-gradient(135deg, #1565c0, #1976d2);
+      background: #0a2a4a;
     }
   }
   
   &.mat-accent {
-    background: linear-gradient(135deg, #ff9800, #ffb74d);
+    background: #1D7500;
     
     &:hover {
-      background: linear-gradient(135deg, #f57c00, #ff9800);
+      background: #2a8a0f;
     }
   }
 }
@@ -166,6 +153,45 @@
 }
 
 .calendar-section {
+  .calendar-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    
+    .calendar-view-options {
+      display: flex;
+      gap: 8px;
+      
+      .view-btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        color: #666;
+        background: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        
+        &.active {
+          background: #011936;
+          color: white;
+          border-color: #011936;
+        }
+        
+        &:hover:not(.active) {
+          background: #e8e8e8;
+        }
+      }
+    }
+    
+    .refresh-btn {
+      color: #011936;
+      
+      &:hover {
+        background-color: rgba(1, 25, 54, 0.1);
+      }
+    }
+  }
+  
   .calendar-container {
     .calendar-header {
       display: flex;
@@ -336,6 +362,74 @@
     p {
       margin: 0;
       font-size: 0.9rem;
+    }
+  }
+}
+
+// Quick Todo Section Styling
+.quick-todo-section {
+  .quick-todo-list {
+    .todo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 8px;
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      
+      .todo-content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        
+        .todo-title {
+          font-weight: 500;
+          color: #333;
+        }
+        
+        .todo-priority {
+          font-size: 0.8rem;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-weight: 500;
+          
+          &.priority-high {
+            background: #ffebee;
+            color: #c62828;
+          }
+          
+          &.priority-medium {
+            background: #fff3e0;
+            color: #ef6c00;
+          }
+          
+          &.priority-low {
+            background: #e8f5e8;
+            color: #2e7d32;
+          }
+        }
+      }
+      
+      .complete-btn {
+        color: #1D7500;
+        
+        &:hover {
+          background-color: rgba(29, 117, 0, 0.1);
+        }
+      }
+    }
+  }
+  
+  .no-todos {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    
+    button {
+      margin-top: 12px;
+      border-radius: 6px;
     }
   }
 }

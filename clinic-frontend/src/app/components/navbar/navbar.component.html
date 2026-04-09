@@ -1,29 +1,21 @@
 <div *ngIf="currentUser">
-  <mat-toolbar color="primary">
-    <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
-      <mat-icon>menu</mat-icon>
-    </button>
+  <mat-toolbar class="custom-toolbar">
+
     
-    <button mat-button class="clinic-title" routerLink="/dashboard">Dental Clinic Management</button>
+    <button mat-button class="clinic-title" routerLink="/dashboard">Pooja Dental Clinic</button>
     
     <span class="spacer"></span>
     
-    <span class="user-info">
-      {{ currentUser.full_name }} ({{ currentUser.role | titlecase }})
-    </span>
-    
-    <button mat-icon-button [matMenuTriggerFor]="userMenu">
-      <mat-icon>account_circle</mat-icon>
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+      Account
     </button>
     
     <mat-menu #userMenu="matMenu">
       <button mat-menu-item (click)="navigateTo('/profile')">
-        <mat-icon>person</mat-icon>
-        <span>Profile</span>
+        <span>Account Settings</span>
       </button>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="logout()">
-        <mat-icon>logout</mat-icon>
         <span>Logout</span>
       </button>
     </mat-menu>
@@ -42,7 +34,6 @@
            *ngFor="let item of filteredMenuItems"
            (click)="navigateTo(item.route)"
            [class.active]="router.url === item.route">
-          <mat-icon matListIcon>{{ item.icon }}</mat-icon>
           <span matLine>{{ item.label }}</span>
         </a>
       </mat-nav-list>
