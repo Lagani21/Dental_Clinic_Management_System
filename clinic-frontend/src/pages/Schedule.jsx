@@ -6,8 +6,8 @@ import {
   startOfWeek, endOfWeek, startOfMonth, endOfMonth,
   eachDayOfInterval, isSameMonth, isToday,
 } from 'date-fns'
-import { ChevronLeft, ChevronRight, Edit2, CalendarClock, XCircle, CheckCircle } from 'lucide-react'
-import { appointmentsApi } from '../services/api'
+import { ChevronLeft, ChevronRight, Edit2, CalendarClock, XCircle, CheckCircle, Plus, X } from 'lucide-react'
+import { appointmentsApi, patientsApi } from '../services/api'
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -184,7 +184,7 @@ function AppointmentDetail({ appt, onUpdated }) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="flex-shrink-0 h-14 px-6 border-b border-gray-200 flex items-center justify-between">
         <p className="text-sm font-bold text-black">Appointment Detail</p>
         {appt && mode === 'view' && !isTerminal && (
           <div className="flex items-center gap-3">
@@ -459,8 +459,8 @@ function DayView({ date, selectedId, onSelect }) {
   return (
     <div className="flex h-full overflow-hidden">
       <div className="flex flex-col overflow-hidden border-r border-gray-200" style={{ width: '65%' }}>
-        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <p className="text-base font-bold text-black">{format(date, 'EEEE, MMMM d, yyyy')}</p>
+        <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-gray-200">
+          <p className="text-sm font-bold text-black">{format(date, 'EEEE, MMMM d, yyyy')}</p>
           <button className="text-[10px] uppercase tracking-wider text-gray-500 underline underline-offset-2 hover:text-black transition-colors">
             Print Schedule
           </button>
@@ -571,12 +571,12 @@ function WeekView({ date, selectedId, onSelect }) {
   return (
     <div className="flex h-full overflow-hidden">
       <div className="flex flex-col overflow-hidden border-r border-gray-200" style={{ width: '65%' }}>
-        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <p className="text-base font-bold text-black">
+        <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-gray-200">
+          <p className="text-sm font-bold text-black">
             {format(weekStart, 'MMMM d')} – {format(weekEnd, 'd, yyyy')}
           </p>
           <p className="text-[10px] uppercase tracking-wider text-gray-400">
-            {appointments.length} appointments this week
+            {appointments.length} this week
           </p>
         </div>
 
@@ -700,10 +700,10 @@ function MonthView({ date, selectedId, onSelect }) {
   return (
     <div className="flex h-full overflow-hidden">
       <div className="flex flex-col overflow-hidden border-r border-gray-200" style={{ width: '65%' }}>
-        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <p className="text-base font-bold text-black">{format(date, 'MMMM yyyy')}</p>
+        <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-gray-200">
+          <p className="text-sm font-bold text-black">{format(date, 'MMMM yyyy')}</p>
           <p className="text-[10px] uppercase tracking-wider text-gray-400">
-            {appointments.length} appointments this month
+            {appointments.length} this month
           </p>
         </div>
 
@@ -817,10 +817,10 @@ function DoctorView({ date, selectedId, onSelect }) {
   return (
     <div className="flex h-full overflow-hidden">
       <div className="flex flex-col overflow-hidden border-r border-gray-200" style={{ width: '65%' }}>
-        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <p className="text-base font-bold text-black">{format(date, 'EEEE, MMMM d, yyyy')}</p>
+        <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-gray-200">
+          <p className="text-sm font-bold text-black">{format(date, 'EEEE, MMMM d, yyyy')}</p>
           <p className="text-[10px] uppercase tracking-wider text-gray-400">
-            {doctors.length} doctors · {appointments.length} appointments
+            {doctors.length} doctors · {appointments.length} appts
           </p>
         </div>
 
@@ -901,6 +901,181 @@ function DoctorView({ date, selectedId, onSelect }) {
   )
 }
 
+// ── NewAppointmentModal ────────────────────────────────────────────────────
+
+const PROCEDURE_TYPES = [
+  'Consultation', 'Cleaning', 'Filling', 'Root Canal', 'Extraction',
+  'Crown', 'Bridge', 'Implant', 'Whitening', 'Orthodontics', 'X-Ray', 'Other',
+]
+
+function NewAppointmentModal({ defaultDate, onClose, onCreated }) {
+  const queryClient = useQueryClient()
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      patient_id:       '',
+      doctor_id:        '',
+      appointment_date: format(defaultDate, 'yyyy-MM-dd'),
+      appointment_time: '09:00',
+      procedure_type:   'Consultation',
+      reason:           '',
+      duration_minutes: 30,
+      chair:            '',
+      notes:            '',
+    },
+  })
+
+  const { data: patients = [] } = useQuery({
+    queryKey: ['patients-list'],
+    queryFn:  () => patientsApi.list({ page_size: 200 }).then((r) => r.data?.items ?? []),
+  })
+
+  const { data: doctors = [] } = useQuery({
+    queryKey: ['doctors-list'],
+    queryFn:  () => appointmentsApi.doctors().then((r) => r.data ?? []),
+  })
+
+  const mutation = useMutation({
+    mutationFn: (data) => appointmentsApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] })
+      onCreated()
+    },
+  })
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white w-full max-w-lg shadow-xl flex flex-col max-h-[90vh]">
+
+        {/* Header */}
+        <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-gray-200">
+          <p className="text-sm font-bold uppercase tracking-[0.15em] text-black">New Appointment</p>
+          <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+
+            {/* Patient */}
+            <div>
+              <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Patient *</label>
+              <select required
+                className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none bg-white"
+                {...register('patient_id', { required: true })}>
+                <option value="">Select patient…</option>
+                {patients.map((p) => (
+                  <option key={p.id} value={p.id}>{p.full_name} · {p.phone}</option>
+                ))}
+              </select>
+              {errors.patient_id && <p className="mt-1 text-[10px] text-red-500">Required</p>}
+            </div>
+
+            {/* Doctor */}
+            <div>
+              <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Doctor *</label>
+              <select required
+                className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none bg-white"
+                {...register('doctor_id', { required: true })}>
+                <option value="">Select doctor…</option>
+                {doctors.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name ?? d.full_name}</option>
+                ))}
+              </select>
+              {errors.doctor_id && <p className="mt-1 text-[10px] text-red-500">Required</p>}
+            </div>
+
+            {/* Date + Time */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Date *</label>
+                <input type="date" required
+                  className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none"
+                  {...register('appointment_date', { required: true })} />
+              </div>
+              <div>
+                <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Time *</label>
+                <input type="time" required
+                  className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none"
+                  {...register('appointment_time', { required: true })} />
+              </div>
+            </div>
+
+            {/* Procedure + Duration */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Procedure</label>
+                <select
+                  className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none bg-white"
+                  {...register('procedure_type')}>
+                  {PROCEDURE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Duration (min)</label>
+                <select
+                  className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none bg-white"
+                  {...register('duration_minutes', { valueAsNumber: true })}>
+                  {[15, 30, 45, 60, 90, 120].map((m) => (
+                    <option key={m} value={m}>{m} min</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Reason */}
+            <div>
+              <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Reason / Chief Complaint</label>
+              <input
+                className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none"
+                placeholder="e.g. Tooth pain upper right"
+                {...register('reason')} />
+            </div>
+
+            {/* Chair + Notes */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Chair</label>
+                <input
+                  className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none"
+                  placeholder="e.g. Chair 1"
+                  {...register('chair')} />
+              </div>
+              <div>
+                <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Notes</label>
+                <input
+                  className="w-full border border-gray-200 px-3 py-2 text-sm focus:border-black focus:outline-none"
+                  placeholder="Optional"
+                  {...register('notes')} />
+              </div>
+            </div>
+
+          </div>
+
+          {mutation.isError && (
+            <div className="px-6 py-2 bg-red-50 border-t border-red-100">
+              <p className="text-[10px] text-red-600">
+                {mutation.error?.response?.data?.detail ?? 'Failed to create appointment'}
+              </p>
+            </div>
+          )}
+
+          <div className="flex-shrink-0 flex justify-end gap-3 px-6 py-4 border-t border-gray-200">
+            <button type="button" onClick={onClose}
+              className="text-[10px] uppercase tracking-wider text-gray-500 border border-gray-300 px-4 py-2 hover:border-black transition-colors">
+              Cancel
+            </button>
+            <button type="submit" disabled={mutation.isPending}
+              className="text-[10px] uppercase tracking-wider font-bold border border-black text-black px-5 py-2 hover:bg-black hover:text-white transition-colors disabled:opacity-40">
+              {mutation.isPending ? 'Saving…' : 'Book Appointment'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 // ── dateLabel — contextual label for a date ────────────────────────────────
 
 function dateLabel(d) {
@@ -919,6 +1094,7 @@ export default function Schedule() {
   const [view,       setView]       = useState('day')
   const [date,       setDate]       = useState(new Date())
   const [selectedId, setSelectedId] = useState(null)
+  const [showNewAppt, setShowNewAppt] = useState(false)
 
   const go = {
     prev:      () => { setSelectedId(null); setDate((d) => view === 'month' ? subMonths(d, 1) : view === 'week' ? subWeeks(d, 1) : subDays(d, 1)) },
@@ -931,10 +1107,8 @@ export default function Schedule() {
 
   const handleSelect = (id) => setSelectedId((prev) => prev === id ? null : id)
 
-  // Build a 7-day strip centred on today for quick-jump (day/doctor views)
-  const today     = new Date()
-  const stripDays = Array.from({ length: 9 }, (_, i) => addDays(subDays(today, 4), i))
-  const ctxLabel  = dateLabel(date)
+  // Build a 9-day strip centred on the selected date so it slides on next/prev
+  const stripDays = Array.from({ length: 9 }, (_, i) => addDays(subDays(date, 4), i))
 
   // For week/month, show step labels instead of day strip
   const isStripView = view === 'day' || view === 'doctor'
@@ -960,81 +1134,58 @@ export default function Schedule() {
             {label}
           </button>
         ))}
+        <div className="flex-1" />
+        <button
+          onClick={() => setShowNewAppt(true)}
+          className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold border border-black text-black px-3 py-1.5 hover:bg-black hover:text-white transition-colors whitespace-nowrap"
+        >
+          <Plus className="h-3 w-3" /> New Appointment
+        </button>
       </div>
 
       {/* ── Row 2: Date navigation ───────────────────────────────── */}
-      <div className="flex-shrink-0 border-b border-gray-200 px-6 py-2.5">
+      <div className="flex-shrink-0 border-b border-gray-200 px-4 flex items-stretch" style={{ minHeight: '64px' }}>
         {isStripView ? (
-          /* Day / Dr.Assigned: scrollable 9-day chip strip */
-          <div className="flex items-center gap-2">
-            {/* ← arrow */}
-            <button onClick={go.prev} className="text-gray-400 hover:text-black transition-colors flex-shrink-0">
+          /* Day / Dr.Assigned: full-width 9-day strip */
+          <div className="flex items-stretch w-full gap-px">
+            <button onClick={go.prev} className="flex items-center px-2 text-gray-400 hover:text-black transition-colors flex-shrink-0">
               <ChevronLeft className="h-4 w-4" />
             </button>
 
-            {/* Day chips */}
-            <div className="flex items-center gap-1 overflow-x-auto flex-1 no-scrollbar">
-              {stripDays.map((d) => {
-                const isSelected = format(d, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
-                const ctx        = dateLabel(d)
-                return (
-                  <button
-                    key={d.toISOString()}
-                    onClick={() => go.toDate(d)}
-                    className={`flex flex-col items-center px-3 py-1.5 flex-shrink-0 transition-colors border ${
-                      isSelected
-                        ? 'border-black bg-black text-white'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-black'
-                    }`}
-                  >
-                    <span className={`text-[8px] uppercase tracking-wider leading-none ${isSelected ? 'text-white opacity-70' : 'text-gray-400'}`}>
-                      {ctx ?? format(d, 'EEE')}
-                    </span>
-                    <span className={`text-sm font-bold leading-tight mt-0.5 ${isSelected ? 'text-white' : 'text-black'}`}>
-                      {format(d, 'd')}
-                    </span>
-                    <span className={`text-[8px] leading-none mt-0.5 ${isSelected ? 'text-white opacity-60' : 'text-gray-400'}`}>
-                      {format(d, 'MMM')}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* → arrow */}
-            <button onClick={go.next} className="text-gray-400 hover:text-black transition-colors flex-shrink-0">
-              <ChevronRight className="h-4 w-4" />
-            </button>
-
-            {/* Divider */}
-            <div className="w-px h-6 bg-gray-200 mx-1 flex-shrink-0" />
-
-            {/* Quick-jump buttons */}
-            {[
-              { label: 'Yesterday', fn: go.yesterday },
-              { label: 'Today',     fn: go.today },
-              { label: 'Tomorrow',  fn: go.tomorrow },
-            ].map(({ label, fn }) => {
-              const isActive = ctxLabel === label
+            {stripDays.map((d) => {
+              const isSelected = format(d, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+              const ctx        = dateLabel(d)
               return (
                 <button
-                  key={label}
-                  onClick={fn}
-                  className={`text-[10px] uppercase tracking-wider whitespace-nowrap transition-colors flex-shrink-0 ${
-                    isActive
-                      ? 'font-bold text-black underline underline-offset-2'
-                      : 'text-gray-400 hover:text-black'
+                  key={d.toISOString()}
+                  onClick={() => go.toDate(d)}
+                  className={`flex flex-col items-center justify-center flex-1 transition-colors border-x border-transparent ${
+                    isSelected
+                      ? 'bg-black text-white border-black'
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-black'
                   }`}
                 >
-                  {label}
+                  <span className={`text-[8px] uppercase tracking-wider leading-none ${isSelected ? 'text-white opacity-60' : 'text-gray-400'}`}>
+                    {ctx ?? format(d, 'EEE')}
+                  </span>
+                  <span className={`text-sm font-bold leading-tight mt-1 ${isSelected ? 'text-white' : 'text-black'}`}>
+                    {format(d, 'd')}
+                  </span>
+                  <span className={`text-[8px] leading-none mt-0.5 ${isSelected ? 'text-white opacity-60' : 'text-gray-400'}`}>
+                    {format(d, 'MMM')}
+                  </span>
                 </button>
               )
             })}
+
+            <button onClick={go.next} className="flex items-center px-2 text-gray-400 hover:text-black transition-colors flex-shrink-0">
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         ) : (
-          /* Week / Month: prev · label · next */
-          <div className="flex items-center gap-4">
-            <button onClick={go.prev} className="text-gray-400 hover:text-black transition-colors">
+          /* Week / Month: same height bar, prev · label · today · next */
+          <div className="flex items-center w-full gap-3">
+            <button onClick={go.prev} className="flex items-center px-2 self-stretch text-gray-400 hover:text-black transition-colors flex-shrink-0">
               <ChevronLeft className="h-4 w-4" />
             </button>
             <p className="text-sm font-bold text-black flex-1">
@@ -1043,10 +1194,10 @@ export default function Schedule() {
                 : format(date, 'MMMM yyyy')
               }
             </p>
-            <button onClick={go.today} className="text-[10px] uppercase tracking-wider text-gray-500 border border-gray-300 px-2.5 py-1 hover:border-black hover:text-black transition-colors">
+            <button onClick={go.today} className="text-[10px] uppercase tracking-wider text-gray-500 border border-gray-300 px-2.5 py-1 hover:border-black hover:text-black transition-colors flex-shrink-0">
               Today
             </button>
-            <button onClick={go.next} className="text-gray-400 hover:text-black transition-colors">
+            <button onClick={go.next} className="flex items-center px-2 self-stretch text-gray-400 hover:text-black transition-colors flex-shrink-0">
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -1060,6 +1211,14 @@ export default function Schedule() {
         {view === 'month'  && <MonthView  date={date} selectedId={selectedId} onSelect={handleSelect} />}
         {view === 'doctor' && <DoctorView date={date} selectedId={selectedId} onSelect={handleSelect} />}
       </div>
+
+      {showNewAppt && (
+        <NewAppointmentModal
+          defaultDate={date}
+          onClose={() => setShowNewAppt(false)}
+          onCreated={() => setShowNewAppt(false)}
+        />
+      )}
     </div>
   )
 }

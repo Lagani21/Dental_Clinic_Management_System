@@ -42,7 +42,7 @@ export default function AppLayout() {
         <div className="flex items-center justify-center gap-4 py-5">
           <span className="text-gray-300 font-thin text-2xl leading-none select-none">|</span>
           <h1 className="text-2xl font-black tracking-[0.3em] uppercase text-black select-none leading-none">
-            Dental Archive
+            PDC
           </h1>
           <span className="text-gray-300 font-thin text-2xl leading-none select-none">|</span>
         </div>

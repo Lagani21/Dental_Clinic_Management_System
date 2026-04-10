@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, Phone, Mail, MapPin, Droplets, ShieldCheck, TriangleAlert, Pencil, X, Check, Clock, FileText, Trash2, Upload, Pill } from 'lucide-react'
-import { format, parseISO } from 'date-fns'
+import { ArrowLeft, Phone, Mail, MapPin, ShieldCheck, TriangleAlert, Pencil, X, Check, Clock, FileText, Trash2, Upload, Pill } from 'lucide-react'
+import { format, parseISO, differenceInYears } from 'date-fns'
 import { patientsApi, medicalHistoryApi, documentsApi, clinicalApi } from '../../services/api'
 import { useNavigate } from 'react-router-dom'
 import DentalChart from '../../components/clinical/DentalChart'
@@ -87,7 +87,6 @@ function InfoEditor({ patient }) {
       address: patient.address ?? '',
       city: patient.city ?? '',
       pincode: patient.pincode ?? '',
-      blood_group: patient.blood_group ?? 'unknown',
       abha_id: patient.abha_id ?? '',
       insurance_id: patient.insurance_id ?? '',
       emergency_contact_name: patient.emergency_contact_name ?? '',
@@ -118,12 +117,11 @@ function InfoEditor({ patient }) {
               <Pencil className="h-3 w-3" /> Edit
             </button>
           </div>
-          <InfoRow label="Gender"        value={patient.gender} />
-          <InfoRow label="Date of Birth" value={fmtDate(patient.date_of_birth)} />
-          <InfoRow label="Phone"         value={patient.phone} />
-          <InfoRow label="Email"         value={patient.email} />
-          <InfoRow label="Address"       value={[patient.address, patient.city, patient.pincode].filter(Boolean).join(', ')} />
-          <InfoRow label="Blood Group"   value={patient.blood_group} />
+          <InfoRow label="Gender" value={patient.gender} />
+          <InfoRow label="Age"    value={patient.date_of_birth ? `${differenceInYears(new Date(), parseISO(patient.date_of_birth))} years` : null} />
+          <InfoRow label="Phone"  value={patient.phone} />
+          <InfoRow label="Email"  value={patient.email} />
+          <InfoRow label="Address" value={[patient.address, patient.city, patient.pincode].filter(Boolean).join(', ')} />
           <InfoRow label="ABHA ID"       value={patient.abha_id} />
           <InfoRow label="Insurance ID"  value={patient.insurance_id} />
         </div>
@@ -204,19 +202,9 @@ function InfoEditor({ patient }) {
           </Field>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Blood Group">
-            <Select {...register('blood_group')}>
-              <option value="unknown">Unknown</option>
-              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="ABHA ID">
-            <Input placeholder="14-digit ABHA number" {...register('abha_id')} />
-          </Field>
-        </div>
+        <Field label="ABHA ID">
+          <Input placeholder="14-digit ABHA number" {...register('abha_id')} />
+        </Field>
 
         <Field label="Insurance ID">
           <Input placeholder="Policy / TPA ID" {...register('insurance_id')} />
@@ -660,46 +648,48 @@ export default function PatientDetail() {
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-lg font-semibold text-slate-800">{patient.full_name}</h1>
-            {patient.patient_id && (
-              <span className="font-mono text-xs text-slate-400">{patient.patient_id}</span>
-            )}
-          </div>
-          <div className="mt-1 flex flex-wrap gap-3 text-sm text-slate-500">
-            {patient.phone && <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" />{patient.phone}</span>}
-            {patient.email && <span className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" />{patient.email}</span>}
-            {patient.city  && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{patient.city}</span>}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <span className="badge-blue flex items-center gap-1">
-              <Droplets className="h-3 w-3" />{patient.blood_group}
-            </span>
-            {patient.abha_id && (
-              <span className="badge-green flex items-center gap-1">
-                <ShieldCheck className="h-3 w-3" />ABHA: {patient.abha_id}
-              </span>
-            )}
-            {patient.insurance_id && (
-              <span className="badge-blue flex items-center gap-1">
-                Insurance: {patient.insurance_id}
-              </span>
-            )}
-            {patient.last_visit && (
-              <span className="text-xs text-slate-400">Last visit: {fmtDate(patient.last_visit)}</span>
-            )}
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-semibold text-slate-800">{patient.full_name}</h1>
+                {patient.patient_id && (
+                  <span className="font-mono text-xs text-slate-400">{patient.patient_id}</span>
+                )}
+              </div>
+              <div className="mt-1 flex flex-wrap gap-3 text-sm text-slate-500">
+                {patient.phone && <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" />{patient.phone}</span>}
+                {patient.email && <span className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" />{patient.email}</span>}
+                {patient.city  && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{patient.city}</span>}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {patient.date_of_birth && (
+                  <span className="badge-blue">
+                    {differenceInYears(new Date(), parseISO(patient.date_of_birth))} yrs
+                  </span>
+                )}
+                {patient.abha_id && (
+                  <span className="badge-green flex items-center gap-1">
+                    <ShieldCheck className="h-3 w-3" />ABHA: {patient.abha_id}
+                  </span>
+                )}
+                {patient.insurance_id && (
+                  <span className="badge-blue flex items-center gap-1">
+                    Insurance: {patient.insurance_id}
+                  </span>
+                )}
+                {patient.last_visit && (
+                  <span className="text-xs text-slate-400">Last visit: {fmtDate(patient.last_visit)}</span>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => navigate(`/prescriptions?new=1&patient=${id}`)}
+              className="flex-shrink-0 flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold border border-slate-800 text-slate-800 px-4 py-2 hover:bg-slate-800 hover:text-white transition-colors"
+            >
+              <Pill className="h-3.5 w-3.5" /> Write Rx
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* Write Prescription shortcut */}
-      <div className="flex justify-end">
-        <button
-          onClick={() => navigate(`/prescriptions?new=1&patient=${id}`)}
-          className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold border border-black text-black px-4 py-2 hover:bg-black hover:text-white transition-colors"
-        >
-          <Pill className="h-3.5 w-3.5" /> Write Prescription
-        </button>
       </div>
 
       {/* PM-002: Allergy alert — shown prominently below the header */}

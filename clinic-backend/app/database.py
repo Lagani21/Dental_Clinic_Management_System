@@ -9,14 +9,18 @@ def _make_ssl_ctx():
     ctx.verify_mode = ssl.CERT_NONE
     return ctx
 
-_connect_args = {"ssl": _make_ssl_ctx()} if settings.DATABASE_SSL else {}
+_connect_args: dict = {"prepared_statement_cache_size": 0}  # required for PgBouncer transaction mode
+if settings.DATABASE_SSL:
+    _connect_args["ssl"] = _make_ssl_ctx()
 
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
+    pool_pre_ping=False,   # skip health-check ping — wastes a round-trip per checkout
+    pool_size=5,           # PgBouncer manages the real pool; keep SQLAlchemy side small
+    max_overflow=5,
+    pool_timeout=30,
+    pool_recycle=1800,     # recycle connections every 30 min to avoid stale TLS sessions
     connect_args=_connect_args,
 )
 

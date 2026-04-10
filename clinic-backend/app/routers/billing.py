@@ -408,7 +408,7 @@ def _generate_pdf(out: InvoiceOut, inv: Invoice, format: str = "a4") -> bytes:
         story.append(Paragraph(f"Notes: {out.notes}", ParagraphStyle("notes", parent=normal, fontSize=7, textColor=colors.gray)))
 
     story.append(Spacer(1, 6*mm))
-    story.append(Paragraph("Thank you for choosing Dental Archive.", ParagraphStyle("footer", parent=normal, fontSize=7, alignment=TA_CENTER, textColor=colors.gray)))
+    story.append(Paragraph("Thank you for choosing PDC.", ParagraphStyle("footer", parent=normal, fontSize=7, alignment=TA_CENTER, textColor=colors.gray)))
 
     doc.build(story)
     return buf.getvalue()
@@ -465,7 +465,7 @@ async def send_invoice(
 
 def _send_email(to: str, out: InvoiceOut, payment_link: str, inv: Invoice) -> None:
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Invoice {out.invoice_number} from Dental Archive — ₹{out.total_amount:,.0f}"
+    msg["Subject"] = f"Invoice {out.invoice_number} from PDC — ₹{out.total_amount:,.0f}"
     msg["From"]    = settings.EMAIL_FROM
     msg["To"]      = to
 
@@ -483,7 +483,7 @@ def _send_email(to: str, out: InvoiceOut, payment_link: str, inv: Invoice) -> No
         <tr><td style="padding:6px 0"><b>Balance Due</b></td><td style="padding:6px 0;font-weight:bold;color:#c00">₹{out.amount_due:,.2f}</td></tr>
       </table>
       {"" if out.amount_due <= 0 else f'<p style="margin-top:20px"><a href="{payment_link}" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;display:inline-block">Pay Online</a></p>'}
-      <p style="margin-top:24px;color:#888;font-size:12px">Dental Archive · Thank you for your trust.</p>
+      <p style="margin-top:24px;color:#888;font-size:12px">PDC · Thank you for your trust.</p>
     </body></html>"""
 
     msg.attach(MIMEText(body_html, "html"))
@@ -503,7 +503,7 @@ async def _send_sms(phone: str, out: InvoiceOut, payment_link: str) -> None:
 
     message = (
         f"Dear {out.patient_name}, your invoice {out.invoice_number} "
-        f"from Dental Archive is ₹{out.total_amount:,.0f}. "
+        f"from PDC is ₹{out.total_amount:,.0f}. "
         f"Balance due: ₹{out.amount_due:,.0f}. "
         f"Pay: {payment_link}"
     )

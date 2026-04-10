@@ -4,12 +4,12 @@
  *   1. /prescriptions              → list + new (pick patient)
  *   2. /prescriptions/new?patient= → new with patient pre-filled (from PatientDetail)
  */
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, useFieldArray } from 'react-hook-form'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { format, parseISO } from 'date-fns'
-import { Plus, Trash2, X, Printer, FileText } from 'lucide-react'
+import { Plus, Trash2, X, Printer } from 'lucide-react'
 import { prescriptionsApi, patientsApi, appointmentsApi } from '../services/api'
 
 // ── Common helpers ─────────────────────────────────────────────────────────────
@@ -187,7 +187,7 @@ function buildPrintHtml(rx) {
     </style>
   </head><body>
     <div class="header">
-      <h1>Dental Archive</h1>
+      <h1>PDC</h1>
       <p style="margin:4px 0;font-size:12px;color:#666">Prescription</p>
     </div>
     <div class="meta">
@@ -201,7 +201,7 @@ function buildPrintHtml(rx) {
     <table>${meds}</table>
     ${rx.notes ? `<div class="notes">Notes: ${rx.notes}</div>` : ''}
     <div class="footer">
-      <span>Dental Archive · dentflow.in</span>
+      <span>PDC · dentflow.in</span>
       <span>Doctor's Signature: ___________________</span>
     </div>
   </body></html>`
@@ -212,7 +212,7 @@ function buildPrintHtml(rx) {
 function NewRxModal({ prefillPatientId, onClose, onCreated }) {
   const queryClient = useQueryClient()
 
-  const { register, control, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, control, handleSubmit } = useForm({
     defaultValues: {
       patient_id:        prefillPatientId ?? '',
       doctor_id:         '',
@@ -237,9 +237,11 @@ function NewRxModal({ prefillPatientId, onClose, onCreated }) {
   })
 
   // When prefillPatientId provided, load patient info for allergy display
+  // select: (res) => res.data must match PatientDetail's cache shape for the same key
   const { data: prefillPatient } = useQuery({
     queryKey: ['patient', prefillPatientId],
-    queryFn:  () => patientsApi.get(prefillPatientId).then((r) => r.data),
+    queryFn:  () => patientsApi.get(prefillPatientId),
+    select:   (res) => res.data,
     enabled:  !!prefillPatientId,
   })
 
@@ -288,10 +290,7 @@ function NewRxModal({ prefillPatientId, onClose, onCreated }) {
                 <label className="text-[9px] uppercase tracking-[0.15em] text-gray-400 block mb-1">Patient *</label>
                 {prefillPatientId ? (
                   <div className="border border-gray-200 px-3 py-2 text-sm bg-gray-50 text-gray-600">
-                    {prefillPatient
-                      ? `${prefillPatient.first_name} ${prefillPatient.last_name}`
-                      : 'Loading…'}
-                    <input type="hidden" {...register('patient_id')} />
+                    {prefillPatient?.full_name ?? 'Loading…'}
                   </div>
                 ) : (
                   <select required
